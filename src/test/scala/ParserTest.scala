@@ -6,8 +6,8 @@ import scala.io.Source
 class ParserTest  extends FunSpec with Matchers {
   val testCases = List("00", "01")
   describe("For each test case, check if the result of Parser is equals to output") {
-    val directionInput = "../utils/testCases/input/"
-    val directionOutput = "../utils/testCases/expected/"
+    val directionInput = "src/utils/testCases/input/"
+    val directionOutput = "src/utils/testCases/expected/"
 
     testCases.foreach( testNumber =>
       it(s"Test $testNumber") {
