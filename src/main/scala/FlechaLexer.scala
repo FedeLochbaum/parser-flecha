@@ -27,7 +27,6 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
     ignoreWhitespaceAndComments
 
     if(isFinal) EOFToken(errors) else {
-      println(current)
       current match {
         case _ => ELSEToken()
       }
