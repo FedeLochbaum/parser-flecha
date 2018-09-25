@@ -1,7 +1,8 @@
 import tokens.{ELSEToken, EOFToken, THENToken, Token}
 
-case class FlechaLexer(var buffer: BufferedIterator[Char]) {
+case class FlechaLexer(val input: String) {
 
+  var buffer: BufferedIterator[Char] = input.iterator.buffered
   def errors = List()
 
   def advance =  buffer next
@@ -26,7 +27,9 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
   def nextToken: Token = {
     ignoreWhitespaceAndComments
 
-    if(isFinal) EOFToken(errors) else {
+    if(isFinal)
+      EOFToken(errors)
+    else {
       current match {
         case _ => ELSEToken()
       }
