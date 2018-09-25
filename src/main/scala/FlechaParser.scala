@@ -1,8 +1,10 @@
 import play.api.libs.json.Json
 
-object FlechaParser {
-  def parse(input: String)  = {
-    Json.parse("[]")
-  }
+case class FlechaParser(input : String) {
+  val lexer = FlechaLexer(input.iterator.buffered)
 
+  def currentToken = lexer.nextToken
+  def parse = {
+    Json.parse("")
+  }
 }
