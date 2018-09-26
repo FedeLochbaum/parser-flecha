@@ -45,15 +45,15 @@ case class FlechaLexer(input: String) {
       case '!'  =>  advance; readNotEq                            // != or !
       case '<'  =>  advance; readLE                               // <= or <
       case '>'  =>  advance; readGE                               // >= or >
-      case 'd'  =>  advance; readDef                              // def or (some id)
-      case 'l'  =>  advance; readLet                              // let or (some id)
-      case 't'  =>  advance; readThen                             // then or (some id)
-      case 'c'  =>  advance; readCase                             // case or (some id)
+      case 'd'  =>  readKeyWord("def",  DEFToken())               // def or (some id)
+      case 'l'  =>  readKeyWord("let",  LETToken())               // let or (some id)
+      case 't'  =>  readKeyWord("then", THENToken())              // then or (some id)
+      case 'c'  =>  readKeyWord("case", CASEToken())              // case or (some id)
       case 'i'  =>  advance; readIfOrIn                           // if, in or (some id)
       case 'e'  =>  advance; readElseOrElif                       // else, elif or (some id)
       case '0' | '1' | '2' | '3' | '4' | '5' |
            '6' | '7' | '8' | '9' => readNumber                    // [0-9][0-9]*
-      case _    => EOFToken(s"Unrecognized start of token: $current")
+      case _    => readID()                                       // Id or Error -> (s"Unrecognized start of token: $current")
     }
   }
 
@@ -106,10 +106,28 @@ case class FlechaLexer(input: String) {
     }
   }
 
+  def readIfOrIn: Token = {
+    current match {
+      case 'f'  =>  advance; IFToken()                            // if
+      case 'n'  =>  advance; INToken()                            // in
+      case  _   =>  readID("i")                                   // Id
+    }
+  }
+
+  def readElseOrElif: Token = {
+    if(current != 'l') {
+      if(!isFinal && buffer.next() == 'i') {
+        readKeyWord("if", ELIFToken())
+      } else if(!isFinal && buffer.next() == 's') {
+        readKeyWord("se",  ELSEToken())
+      } else readID("el")
+    } else readID("e")
+  }
+
   def readCharacter: Token = {
     current match {
-      case '\"'  => advance; ReadSpecialChar                      // '\'', '\"', '\\', '\t', '\n' or '\r'
-      case  _  =>   advance; readSimpleChar(_)                    // '_'
+      case '\"'  => advance; readSpecialChar                      // '\'', '\"', '\\', '\t', '\n' or '\r'
+      case  _    => advance; readSimpleChar(_)                    // '_'
     }
   }
 
