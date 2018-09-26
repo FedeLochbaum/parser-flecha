@@ -2,7 +2,7 @@ package tokens
 
 abstract class Token
 
-case class EOFToken(errors: List[String] = List()) extends Token // Final token
+case class EOFToken(error: String = "") extends Token // Final token
 
 // Constants
 case class LOWERIDToken(value: String) extends Token
