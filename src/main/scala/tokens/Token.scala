@@ -39,6 +39,8 @@ case class SEMICOLONToken() extends Token // ;
 
 case class LPARENToken() extends Token    // (
 
+case class RPARENToken() extends Token    // )
+
 case class LAMBDAToken() extends Token    // \
 
 case class PIPEToken() extends Token      // |
@@ -75,9 +77,3 @@ case class TIMESToken() extends Token     // *
 case class DIVToken() extends Token       // /
 
 case class MODToken() extends Token       // %
-
-
-
-
-
-
