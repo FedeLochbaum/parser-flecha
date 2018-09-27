@@ -142,7 +142,7 @@ case class FlechaLexer(input: String) {
 
   def readSpecialChar: Token = {
     current match {
-      case ''' | '"' | '\\' | 't' | 'n' | 'r'  => readSimpleChar("\"".concat(current.toString))
+      case ''' | '"' | '\\' | 't' | 'n' | 'r'  => readSimpleChar("\\".concat(current.toString))
       case _                                   => error("Expected a valid char")
     }
   }
