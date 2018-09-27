@@ -3,14 +3,14 @@ import tokens._
 import scala.language.postfixOps
 
 case class FlechaLexer(input: String) {
-  var buffer = input.iterator.buffered
+  var buffer: BufferedIterator[Char] = input.iterator.buffered
 
-  def advance =  buffer next
+  def advance =  buffer.next
   def isFinal = !buffer.hasNext
   def current = buffer.head
 
   def isJumpLine = current == '\n'
-  def isWhitespace = ' ' == current
+  def isWhitespace = current == ' '
   def isComments = {
     val currentString = buffer.mkString
     buffer = currentString.iterator.buffered
@@ -26,7 +26,7 @@ case class FlechaLexer(input: String) {
 
   def removeWhitespaces = if (isWhitespace) { advance ; true } else { false }
   def removeComments   = if (isComments) { advanceLine ; true } else { false }
-  def advanceLine: Unit = if (!isFinal) advance ; while(!isFinal && !isJumpLine) advance ; while (isJumpLine) advance
+  def advanceLine = if (!isFinal) advance ; while(!isFinal && !isJumpLine) advance ; while (isJumpLine && buffer.hasNext) advance
 
   def ignoreWhitespaceAndComments= while (!isFinal && (removeWhitespaces || removeComments)) {}
 
@@ -138,7 +138,7 @@ case class FlechaLexer(input: String) {
     }
   }
 
-  def readSimpleChar(char: String): Token = if(current == ''') CHARToken(char) else error(s"Syntax error: expected '")
+  def readSimpleChar(char: String): Token = if(current == ''') { advance ; CHARToken(char) } else error(s"Syntax error: expected '")
 
   def readSpecialChar: Token = {
     current match {
@@ -149,9 +149,9 @@ case class FlechaLexer(input: String) {
 
   def readString: Token = {
     val string = ""
-    while(!isFinal && buffer.next() != '"') { string.concat(current.toString)}
-    if(isFinal) error(s"Syntax error: expected ${'\"'}")                  // Error
-    else STRINGToken(string)                                                    // "_"
+    while(!isFinal && current != '"') { advance ; string.concat(current.toString)}
+    if(current == '"') { advance; STRINGToken(string) }                    // "_"
+    else error(s"Syntax error: expected ${'\"'}")                   // Error
   }
 
   def readNumber: Token = {
@@ -165,7 +165,7 @@ case class FlechaLexer(input: String) {
 //      }
 //    }
     // TODO: MISSING IMPLEMENTATION
-    NUMBERToken(0)
+    error(current.toString)
   }
 
   def readKeyWord(word: String, token: Token): Token = {
@@ -176,7 +176,7 @@ case class FlechaLexer(input: String) {
 
   def readID(currentString: String = ""): Token = {
     // TODO: MISSING IMPLEMENTATION
-    error(current)
+    error(current.toString)
   }
 
   def error(msg: String) = throw new MalformedInput(msg)
