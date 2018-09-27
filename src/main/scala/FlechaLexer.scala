@@ -149,28 +149,28 @@ case class FlechaLexer(input: String) {
 
   def readString: Token = {
     val string = ""
-    while(!isFinal && current != '"') { advance ; string.concat(current.toString)}
+    while(!isFinal && current != '"') { advance ; string.concat(current.toString) }
     if(current == '"') { advance; STRINGToken(string) }                    // "_"
     else error(s"Expected ${'\"'}")                                 // Error
   }
 
   def readNumber: Token = {
     var currentNumber = ""
-    while(!isFinal && isNumber) currentNumber+=current.toString ; advance
+    while(!isFinal && isNumber) { currentNumber+=current.toString ; advance }
     if(isNumber) currentNumber+=current.toString
     NUMBERToken(currentNumber.toInt)
   }
 
   def readKeyWord(word: String, token: Token): Token = {
     var currentString = ""
-    while(!isFinal && word.contains(currentString ++ current.toString)) currentString+=current.toString ; advance
+    while(!isFinal && word.contains(currentString ++ current.toString)) { currentString+=current.toString ; advance }
     if(word.contains(currentString ++ current.toString)) currentString+=current.toString
     if(currentString == word && (isWhitespace || isFinal)) token else readID(currentString)
   }
 
   def readID(currentString: String = ""): Token = {
     var completeString = currentString
-    while(!isFinal && !isWhitespace) completeString+=current.toString ; advance
+    while(!isFinal && !isWhitespace) { completeString+=current.toString ; advance }
     if(!isWhitespace) completeString+=current.toString
     if(Character.isUpperCase(completeString.charAt(0))) UPPERIDToken(completeString) else LOWERIDToken(completeString)
   }
