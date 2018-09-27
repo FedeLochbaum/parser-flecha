@@ -46,7 +46,7 @@ case class FlechaLexer(input: String) {
       case '-'  =>  advance; readArrow                            //  -> or -(minus)
       case '='  =>  advance; readEqual                            //  == or =
       case '''  =>  advance; readCharacter                        // '_'
-      case '\"'  =>  advance; readString                           // "_"
+      case '\"' =>  advance; readString                           // "_"
       case '|'  =>  advance; readPipe                             // | or ||
       case '&'  =>  advance; readAnd                              // &&
       case '!'  =>  advance; readNotEq                            // != or !
