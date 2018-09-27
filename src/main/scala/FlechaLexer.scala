@@ -38,7 +38,7 @@ case class FlechaLexer(input: String) {
       case '('  =>  advance; LPARENToken()                        // (
       case ')'  =>  advance; RPARENToken()                        // )
       case ';'  =>  advance; SEMICOLONToken()                     // ;
-      case '\"' =>  advance; LAMBDAToken()                        // \ (lambda)
+      case '\\' =>  advance; LAMBDAToken()                        // \ (lambda)
       case '+'  =>  advance; PLUSToken()                          // +
       case '*'  =>  advance; TIMESToken()                         // *
       case '/'  =>  advance; DIVToken()                           // /
@@ -46,7 +46,7 @@ case class FlechaLexer(input: String) {
       case '-'  =>  advance; readArrow                            //  -> or -(minus)
       case '='  =>  advance; readEqual                            //  == or =
       case '''  =>  advance; readCharacter                        // '_'
-      case '"'  =>  advance; readString                           // "_"
+      case '\"'  =>  advance; readString                           // "_"
       case '|'  =>  advance; readPipe                             // | or ||
       case '&'  =>  advance; readAnd                              // &&
       case '!'  =>  advance; readNotEq                            // != or !
@@ -133,7 +133,7 @@ case class FlechaLexer(input: String) {
 
   def readCharacter: Token = {
     current match {
-      case '\"'  => advance; readSpecialChar                      // '\'', '\"', '\\', '\t', '\n' or '\r'
+      case '\\'  => advance; readSpecialChar                      // '\'', '\"', '\\', '\t', '\n' or '\r'
       case  char => advance; readSimpleChar(char.toString)        // '_'
     }
   }
@@ -142,7 +142,7 @@ case class FlechaLexer(input: String) {
 
   def readSpecialChar: Token = {
     current match {
-      case ''' | '"' | '\"' | 't' | 'n' | 'r'  => readSimpleChar("\"".concat(current.toString))
+      case ''' | '"' | '\\' | 't' | 'n' | 'r'  => readSimpleChar("\"".concat(current.toString))
       case _                                   => error("Expected a valid char")
     }
   }
