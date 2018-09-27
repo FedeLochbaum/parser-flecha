@@ -60,7 +60,7 @@ case class FlechaLexer(input: String) {
       case 'e'  =>  advance; readElseOrElif                       // else, elif or (some id)
       case '0' | '1' | '2' | '3' | '4' | '5' |
            '6' | '7' | '8' | '9' => readNumber                    // [0-9][0-9]*
-      case  _   => readID()                                       // Id or Error -> (s"Unrecognized start of token: $current")
+      case  _   => readID()                                       // Id or FlechaSyntaxError
     }
   }
 
@@ -175,7 +175,7 @@ case class FlechaLexer(input: String) {
     if(Character.isUpperCase(completeString.charAt(0))) UPPERIDToken(completeString) else LOWERIDToken(completeString)
   }
 
-  def error(msg: String) = throw new MalformedInput(msg)
+  def error(msg: String) = throw new FlechaSyntaxError(msg)
 }
 
-class MalformedInput(val msg: String) extends Exception(s"Syntax error: $msg")
+class FlechaSyntaxError(val msg: String) extends Exception(s"Syntax error: $msg")
