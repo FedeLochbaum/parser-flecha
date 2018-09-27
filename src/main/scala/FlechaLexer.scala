@@ -155,28 +155,24 @@ case class FlechaLexer(input: String) {
   }
 
   def readNumber: Token = {
-//    var currentNumber = ""
-//    while(!isFinal && isNumber) currentNumber+=current.toString ; advance
-//    if(isFinal) {
-//      if(isWhitespace)
-//        NUMBERToken(currentNumber.toInt)
-//      else {
-//        if(isNumber)  NUMBERToken(currentNumber.concat(current.toString).toInt)
-//      }
-//    }
-    // TODO: MISSING IMPLEMENTATION
-    error(current.toString)
+    var currentNumber = ""
+    while(!isFinal && isNumber) currentNumber+=current.toString ; advance
+    if(isNumber) currentNumber+=current.toString
+    NUMBERToken(currentNumber.toInt)
   }
 
   def readKeyWord(word: String, token: Token): Token = {
     var currentString = ""
     while(!isFinal && word.contains(currentString ++ current.toString)) currentString+=current.toString ; advance
-    if(currentString == word && current == ' ') token else readID(currentString)
+    if(word.contains(currentString ++ current.toString)) currentString+=current.toString
+    if(currentString == word && (isWhitespace || isFinal)) token else readID(currentString)
   }
 
   def readID(currentString: String = ""): Token = {
-    // TODO: MISSING IMPLEMENTATION
-    error(current.toString)
+    var completeString = currentString
+    while(!isFinal && !isWhitespace) completeString+=current.toString ; advance
+    if(!isWhitespace) completeString+=current.toString
+    if(Character.isUpperCase(completeString.charAt(0))) UPPERIDToken(completeString) else LOWERIDToken(completeString)
   }
 
   def error(msg: String) = throw new MalformedInput(msg)
