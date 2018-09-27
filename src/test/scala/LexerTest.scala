@@ -7,7 +7,7 @@ class LexerTest extends FunSpec with Matchers {
       describe("a program just with a comment with jump line") {
         val input = " -- Programa Vacio \n"
         it("the lexer return a EOFToken") {
-          FlechaLexer(input).nextToken should equal(EOFToken(List()))
+          FlechaLexer(input).nextToken should equal(EOFToken())
         }
       }
 

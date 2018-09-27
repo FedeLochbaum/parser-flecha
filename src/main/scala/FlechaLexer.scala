@@ -3,7 +3,7 @@ import tokens._
 import scala.language.postfixOps
 
 case class FlechaLexer(input: String) {
-  var buffer: BufferedIterator[Char] = input.iterator.buffered
+  var buffer = input.iterator.buffered
 
   def advance =  buffer next
   def isFinal = !buffer.hasNext
@@ -15,6 +15,13 @@ case class FlechaLexer(input: String) {
     val currentString = buffer.mkString
     buffer = currentString.iterator.buffered
     currentString.startsWith("--")
+  }
+  def isNumber = {
+    current match {
+      case '0' | '1' | '2' | '3' | '4' | '5' |
+           '6' | '7' | '8' | '9' => true
+      case _                     => false
+    }
   }
 
   def removeWhitespaces = if (isWhitespace) { advance ; true } else { false }
@@ -53,7 +60,7 @@ case class FlechaLexer(input: String) {
       case 'e'  =>  advance; readElseOrElif                       // else, elif or (some id)
       case '0' | '1' | '2' | '3' | '4' | '5' |
            '6' | '7' | '8' | '9' => readNumber                    // [0-9][0-9]*
-      case _    => readID()                                       // Id or Error -> (s"Unrecognized start of token: $current")
+      case  _   => readID()                                       // Id or Error -> (s"Unrecognized start of token: $current")
     }
   }
 
@@ -67,7 +74,7 @@ case class FlechaLexer(input: String) {
   def readAnd: Token = {
     current match {
       case '&'  =>  advance; ANDToken()                           // &&
-      case  _   =>  EOFToken(s"Syntax error: &${_}")              // Error
+      case  c   =>  EOFToken(s"Syntax error: &$c")                // Error
     }
   }
 
@@ -127,7 +134,16 @@ case class FlechaLexer(input: String) {
   def readCharacter: Token = {
     current match {
       case '\"'  => advance; readSpecialChar                      // '\'', '\"', '\\', '\t', '\n' or '\r'
-      case  _    => advance; readSimpleChar(_)                    // '_'
+      case  char => advance; readSimpleChar(char.toString)        // '_'
+    }
+  }
+
+  def readSimpleChar(char: String): Token = if(current == ''') CHARToken(char) else EOFToken(s"Syntax error: expected '")
+
+  def readSpecialChar: Token = {
+    current match {
+      case ''' | '"' | '\"' | 't' | 'n' | 'r'  => readSimpleChar("\"".concat(current.toString))
+      case _                                   => EOFToken(s"Syntax error: expected a valid char'")
     }
   }
 
@@ -136,5 +152,30 @@ case class FlechaLexer(input: String) {
     while(!isFinal && buffer.next() != '"') { string.concat(current.toString)}
     if(isFinal) EOFToken(s"Syntax error: expected ${'\"'}")                     // Error
     else STRINGToken(string)                                                    // "_"
+  }
+
+  def readNumber: Token = {
+//    var currentNumber = ""
+//    while(!isFinal && isNumber) currentNumber+=current.toString ; advance
+//    if(isFinal) {
+//      if(isWhitespace)
+//        NUMBERToken(currentNumber.toInt)
+//      else {
+//        if(isNumber)  NUMBERToken(currentNumber.concat(current.toString).toInt)
+//      }
+//    }
+    // TODO: MISSING IMPLEMENTATION
+    NUMBERToken(0)
+  }
+
+  def readKeyWord(word: String, token: Token): Token = {
+    var currentString = ""
+    while(!isFinal && word.contains(currentString ++ current.toString)) currentString+=current.toString ; advance
+    if(currentString == word && current == ' ') token else readID(currentString)
+  }
+
+  def readID(currentString: String = ""): Token = {
+    // TODO: MISSING IMPLEMENTATION
+    EOFToken(s"Unrecognized start of token: ${currentString.concat(current.toString)}")
   }
 }
