@@ -115,9 +115,9 @@ case class FlechaLexer(input: String) {
 
   def readIfOrIn: Token = {
     current match {
-      case 'f'  =>  advance; IFToken()                            // if
-      case 'n'  =>  advance; INToken()                            // in
-      case  _   =>  readID("i")                                   // Id
+      case 'f'  =>  advance; if(isFinal || isWhitespace) IFToken() else  readID("if")              // if
+      case 'n'  =>  advance; if(isFinal || isWhitespace) INToken() else  readID("in")              // in
+      case  _   =>  readID("i")                                                                    // Id
     }
   }
 
