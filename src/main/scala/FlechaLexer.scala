@@ -74,7 +74,7 @@ case class FlechaLexer(input: String) {
   def readAnd: Token = {
     current match {
       case '&'  =>  advance; ANDToken()                           // &&
-      case  c   =>  error(s"&$c")            // Error
+      case  c   =>  error(s"&$c")                                 // Error
     }
   }
 
