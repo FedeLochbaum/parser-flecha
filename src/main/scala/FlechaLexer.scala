@@ -26,7 +26,7 @@ case class FlechaLexer(input: String) {
 
   def removeWhitespaces = if (isWhitespace) { advance ; true } else { false }
   def removeComments   = if (isComments) { advanceLine ; true } else { false }
-  def advanceLine = if (!isFinal) advance ; while(!isFinal && !isJumpLine) advance ; while (isJumpLine && buffer.hasNext) advance
+  def advanceLine = if (!isFinal) advance ; while(!isFinal && !isJumpLine) advance ; while (isJumpLine && !isFinal) advance
 
   def ignoreWhitespaceAndComments= while (!isFinal && (removeWhitespaces || removeComments)) {}
 
