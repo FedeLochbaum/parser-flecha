@@ -74,7 +74,7 @@ case class FlechaLexer(input: String) {
   def readAnd: Token = {
     current match {
       case '&'  =>  advance; ANDToken()                           // &&
-      case  c   =>  EOFToken(s"Syntax error: &$c")                // Error
+      case  c   =>  error(s"Syntax error: &$c")            // Error
     }
   }
 
@@ -138,19 +138,19 @@ case class FlechaLexer(input: String) {
     }
   }
 
-  def readSimpleChar(char: String): Token = if(current == ''') CHARToken(char) else EOFToken(s"Syntax error: expected '")
+  def readSimpleChar(char: String): Token = if(current == ''') CHARToken(char) else error(s"Syntax error: expected '")
 
   def readSpecialChar: Token = {
     current match {
       case ''' | '"' | '\"' | 't' | 'n' | 'r'  => readSimpleChar("\"".concat(current.toString))
-      case _                                   => EOFToken(s"Syntax error: expected a valid char'")
+      case _                                   => error(s"Syntax error: expected a valid char'")
     }
   }
 
   def readString: Token = {
     val string = ""
     while(!isFinal && buffer.next() != '"') { string.concat(current.toString)}
-    if(isFinal) EOFToken(s"Syntax error: expected ${'\"'}")                     // Error
+    if(isFinal) error(s"Syntax error: expected ${'\"'}")                  // Error
     else STRINGToken(string)                                                    // "_"
   }
 
@@ -176,6 +176,10 @@ case class FlechaLexer(input: String) {
 
   def readID(currentString: String = ""): Token = {
     // TODO: MISSING IMPLEMENTATION
-    EOFToken(s"Unrecognized start of token: ${currentString.concat(current.toString)}")
+    error(current)
   }
+
+  def error(msg: String) = throw new MalformedInput(msg)
 }
+
+class MalformedInput(val msg: String) extends Exception(s"Malformed input: $msg")

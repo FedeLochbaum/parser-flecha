@@ -2,7 +2,7 @@ package tokens
 
 abstract class Token
 
-case class EOFToken(error: String = "") extends Token // Final token
+case class EOFToken() extends Token // Final token
 
 // Constants
 case class LOWERIDToken(value: String) extends Token
