@@ -149,9 +149,9 @@ case class FlechaLexer(input: String) {
 
   def readString: Token = {
     val string = ""
-    while(!isFinal && current != '"') { advance ; string.concat(current.toString) }
-    if(current == '"') { advance; STRINGToken(string) }                    // "_"
-    else error(s"Expected ${'\"'}")                                 // Error
+    while(!isFinal && current != '\"') { advance ; string.concat(current.toString) }
+    if(current == '\"') { advance; STRINGToken(string) }                    // "_"
+    else error(s"Expected ${'\"'}")                                  // Error
   }
 
   def readNumber: Token = {
