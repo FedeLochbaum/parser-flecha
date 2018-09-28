@@ -73,7 +73,7 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
           case "in"   => INToken()                                // in
           case "else" => ELSEToken()                              // else
           case "elif" => ELIFToken()                              // elif
-          case _      => id                                       // some id
+          case  _     => id                                       // some id
         }
     }
   }
@@ -144,7 +144,7 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
       case 't'  => readSimpleChar('\t')
       case 'n'  => readSimpleChar('\n')
       case 'r'  => readSimpleChar('\r')
-      case _    => error("Expected a valid char")
+      case  _   => error("Expected a valid char")
     }
   }
 
