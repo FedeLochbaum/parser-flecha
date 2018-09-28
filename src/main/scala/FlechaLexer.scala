@@ -60,15 +60,21 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
       case '!'  =>  advance; readNotEq                            // != or !
       case '<'  =>  advance; readLE                               // <= or <
       case '>'  =>  advance; readGE                               // >= or >
-      case 'd'  =>  readKeyWord("def",  DEFToken())               // def or (some id)
-      case 'l'  =>  readKeyWord("let",  LETToken())               // let or (some id)
-      case 't'  =>  readKeyWord("then", THENToken())              // then or (some id)
-      case 'c'  =>  readKeyWord("case", CASEToken())              // case or (some id)
-      case 'i'  =>  advance; readIfOrIn                           // if, in or (some id)
-      case 'e'  =>  advance; readElseOrElif                       // else, elif or (some id)
       case '0' | '1' | '2' | '3' | '4' | '5' |
            '6' | '7' | '8' | '9' => readNumber                    // [0-9][0-9]*
-      case  _   => readID()                                       // Id or FlechaSyntaxError
+      case  _   =>
+        val id = readID()
+        id match {
+          case LOWERIDToken("def")  => DEFToken()                 // def
+          case LOWERIDToken("let")  => LETToken()                 // let
+          case LOWERIDToken("then") => THENToken()                // then
+          case LOWERIDToken("case") => CASEToken()                // case
+          case LOWERIDToken("if")   => IFToken()                  // if
+          case LOWERIDToken("in")   => INToken()                  // in
+          case LOWERIDToken("else") => ELSEToken()                // else
+          case LOWERIDToken("elif") => ELIFToken()                // elif
+          case _                    => id                         // some id
+        }
     }
   }
 
@@ -121,38 +127,24 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
     }
   }
 
-  def readIfOrIn: Token = {
-    current match {
-      case 'f'  =>  advance; if(isFinal || isWhitespace) IFToken() else  readID("if")              // if
-      case 'n'  =>  advance; if(isFinal || isWhitespace) INToken() else  readID("in")              // in
-      case  _   =>  readID("i")                                                                    // Id
-    }
-  }
-
-  def readElseOrElif: Token = {
-    if(current == 'l') {
-      advance
-      if(!isFinal && current == 'i') {
-        readKeyWord("if", ELIFToken())
-      } else if(!isFinal && current == 's') {
-        readKeyWord("se",  ELSEToken())
-      } else readID("el")
-    } else readID("e")
-  }
-
   def readCharacter: Token = {
     current match {
       case '\\'  => advance; readSpecialChar                      // '\'', '\"', '\\', '\t', '\n' or '\r'
-      case  char => advance; readSimpleChar(char.toString)        // '_'
+      case  char => advance; readSimpleChar(char)                 // '_'
     }
   }
 
-  def readSimpleChar(char: String): Token = if(current == ''') { advance ; CHARToken(char) } else error("Expected '")
+  def readSimpleChar(char: Char): Token = if(current == ''') { advance ; CHARToken(char) } else error("Expected '")
 
   def readSpecialChar: Token = {
     current match {
-      case ''' | '"' | '\\' | 't' | 'n' | 'r'  => readSimpleChar("\\".concat(current.toString))
-      case _                                   => error("Expected a valid char")
+      case '''  => readSimpleChar(''')
+      case '\"' => readSimpleChar('\"')
+      case '\\' => readSimpleChar('\\')
+      case 't'  => readSimpleChar('\t')
+      case 'n'  => readSimpleChar('\n')
+      case 'r'  => readSimpleChar('\r')
+      case _    => error("Expected a valid char")
     }
   }
 
@@ -168,13 +160,6 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
     while(!isFinal && isNumber) { currentNumber+=current.toString ; advance }
     if(isNumber) currentNumber+=current.toString
     NUMBERToken(currentNumber.toInt)
-  }
-
-  def readKeyWord(word: String, token: Token): Token = {
-    var currentString = ""
-    while(!isFinal && word.contains(currentString ++ current.toString)) { currentString+=current.toString ; advance }
-    if(word.contains(currentString ++ current.toString)) currentString+=current.toString
-    if(currentString == word && (isWhitespace || isFinal || isJumpLine)) token else readID(currentString)
   }
 
   def readID(currentString: String = ""): Token = {

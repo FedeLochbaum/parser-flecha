@@ -29,7 +29,7 @@ class LexerTest extends FunSpec with Matchers {
     describe("CHARToken") {
       val input = " 'c' = 2 \n ".iterator.buffered
       it("the lexer return a CHARToken") {
-        FlechaLexer(input).nextToken should equal (CHARToken("c"))
+        FlechaLexer(input).nextToken should equal (CHARToken('c'))
       }
     }
 

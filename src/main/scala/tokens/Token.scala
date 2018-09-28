@@ -11,7 +11,7 @@ case class UPPERIDToken(value: String) extends Token
 
 case class NUMBERToken(value: Int) extends Token
 
-case class CHARToken(value: String) extends Token
+case class CHARToken(value: Char) extends Token
 
 case class STRINGToken(value: String) extends Token
 
