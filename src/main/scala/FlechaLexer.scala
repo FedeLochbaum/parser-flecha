@@ -150,9 +150,22 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
 
   def readString: Token = {
     var string = ""
-    while(!isFinal && current != '\"') { string += current.toString ; advance }
+    while(!isFinal && current != '\"') {
+      if(current == '\\') { advance ; string += specialCharToString ; advance }
+      else { string += current ; advance }
+    }
+
     if(current == '\"') { advance; STRINGToken(string) }                    // "_"
     else error(s"Expected ${'\"'}")                                  // Error
+  }
+
+  def specialCharToString = {
+    current match {
+      case 't'  => '\t'
+      case 'n'  => '\n'
+      case 'r'  => '\r'
+      case  _   => "\\" ++ current.toString
+    }
   }
 
   def readNumber: Token = {
