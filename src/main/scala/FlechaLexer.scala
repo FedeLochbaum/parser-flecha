@@ -2,8 +2,7 @@ import tokens._
 
 import scala.language.postfixOps
 
-case class FlechaLexer(input: String) {
-  var buffer: BufferedIterator[Char] = input.iterator.buffered
+case class FlechaLexer(var buffer: BufferedIterator[Char]) {
 
   def advance =  buffer.next
   def isFinal = !buffer.hasNext
