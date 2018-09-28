@@ -150,11 +150,7 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
 
   def readString: Token = {
     var string = ""
-    while(!isFinal && current != '\"') {
-      if(current == '\\') { advance ; string += specialCharToString ; advance }
-      else { string += current ; advance }
-    }
-
+    while(!isFinal && current != '\"') { string += (if(current == '\\') { advance ; specialCharToString } else current ) ; advance }
     if(current == '\"') { advance; STRINGToken(string) }                    // "_"
     else error(s"Expected ${'\"'}")                                  // Error
   }
