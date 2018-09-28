@@ -24,10 +24,11 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
   }
 
   def removeWhitespaces = if (isWhitespace) { advance ; true } else { false }
-  def removeComments   = if (isComments) { advanceLine ; true } else { false }
-  def advanceLine = if (!isFinal) advance ; while(!isFinal && !isJumpLine) advance ; while (isJumpLine && !isFinal) advance
+  def removeComments   = if (isComments) { advance ; advance ; advanceLine ; true } else { false }
+  def removeJumpLines = if (isJumpLine) { while(isJumpLine) advance ; true } else { false }
+  def advanceLine = while(!isFinal && !isJumpLine) advance
 
-  def ignoreWhitespaceAndComments= while (!isFinal && (removeWhitespaces || removeComments)) {}
+  def ignoreWhitespaceAndComments= while (!isFinal && (removeWhitespaces || removeComments || removeJumpLines)) {}
 
   def nextToken: Token = {
     ignoreWhitespaceAndComments
