@@ -63,17 +63,17 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
       case '0' | '1' | '2' | '3' | '4' | '5' |
            '6' | '7' | '8' | '9' => readNumber                    // [0-9][0-9]*
       case  _   =>
-        val id = readID()
-        id match {
-          case LOWERIDToken("def")  => DEFToken()                 // def
-          case LOWERIDToken("let")  => LETToken()                 // let
-          case LOWERIDToken("then") => THENToken()                // then
-          case LOWERIDToken("case") => CASEToken()                // case
-          case LOWERIDToken("if")   => IFToken()                  // if
-          case LOWERIDToken("in")   => INToken()                  // in
-          case LOWERIDToken("else") => ELSEToken()                // else
-          case LOWERIDToken("elif") => ELIFToken()                // elif
-          case _                    => id                         // some id
+        val id : IDToken = readID()
+        id.value match {
+          case "def"  => DEFToken()                               // def
+          case "let"  => LETToken()                               // let
+          case "then" => THENToken()                              // then
+          case "case" => CASEToken()                              // case
+          case "if"   => IFToken()                                // if
+          case "in"   => INToken()                                // in
+          case "else" => ELSEToken()                              // else
+          case "elif" => ELIFToken()                              // elif
+          case _      => id                                       // some id
         }
     }
   }
@@ -162,7 +162,7 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
     NUMBERToken(currentNumber.toInt)
   }
 
-  def readID(currentString: String = ""): Token = {
+  def readID(currentString: String = "") = {
     var completeString = currentString
     while(!isFinal && !isWhitespace && !isSymbol) { completeString+=current.toString ; advance }
     if(!isWhitespace && !isSymbol) completeString+=current.toString

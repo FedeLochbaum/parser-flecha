@@ -4,10 +4,12 @@ abstract class Token
 
 case class EOFToken() extends Token // Final token
 
-// Constants
-case class LOWERIDToken(value: String) extends Token
+trait IDToken extends Token { def value: String } // Abstraction for id tokens
 
-case class UPPERIDToken(value: String) extends Token
+// Constants
+case class LOWERIDToken(value: String) extends IDToken
+
+case class UPPERIDToken(value: String) extends IDToken
 
 case class NUMBERToken(value: Int) extends Token
 
