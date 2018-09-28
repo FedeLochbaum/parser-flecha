@@ -149,8 +149,8 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
   }
 
   def readString: Token = {
-    val string = ""
-    while(!isFinal && current != '\"') { advance ; string.concat(current.toString) }
+    var string = ""
+    while(!isFinal && current != '\"') { string += current.toString ; advance }
     if(current == '\"') { advance; STRINGToken(string) }                    // "_"
     else error(s"Expected ${'\"'}")                                  // Error
   }
