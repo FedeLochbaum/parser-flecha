@@ -22,6 +22,14 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
       case _                     => false
     }
   }
+  def isSymbol = {
+    current match {
+      case '(' | ')' | ';' | '\\' | '+' | '-' |
+           '*' | '/' | '%' | '=' | '&' | '!' |
+           '<' | '>'             => true
+      case _                     => false
+    }
+  }
 
   def removeWhitespaces = if (isWhitespace) { advance ; true } else { false }
   def removeJumpLines = if (isJumpLine) { advance ; true } else { false }
@@ -166,13 +174,13 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
     var currentString = ""
     while(!isFinal && word.contains(currentString ++ current.toString)) { currentString+=current.toString ; advance }
     if(word.contains(currentString ++ current.toString)) currentString+=current.toString
-    if(currentString == word && (isWhitespace || isFinal)) token else readID(currentString)
+    if(currentString == word && (isWhitespace || isFinal || isJumpLine)) token else readID(currentString)
   }
 
   def readID(currentString: String = ""): Token = {
     var completeString = currentString
-    while(!isFinal && !isWhitespace) { completeString+=current.toString ; advance }
-    if(!isWhitespace) completeString+=current.toString
+    while(!isFinal && !isWhitespace && !isSymbol) { completeString+=current.toString ; advance }
+    if(!isWhitespace && !isSymbol) completeString+=current.toString
     if(Character.isUpperCase(completeString.charAt(0))) UPPERIDToken(completeString) else LOWERIDToken(completeString)
   }
 
