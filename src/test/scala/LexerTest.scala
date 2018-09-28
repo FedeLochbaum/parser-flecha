@@ -33,12 +33,26 @@ class LexerTest extends FunSpec with Matchers {
       }
     }
 
+    describe("CHARToken with special character") {
+      val input = " '\n' = 2 \n ".iterator.buffered
+      it("the lexer return a CHARToken") {
+        FlechaLexer(input).nextToken should equal (CHARToken('\n'))
+      }
+    }
+
     describe("STRINGToken") {
       val input = " \"uno\" = 2 \n ".iterator.buffered
       it("the lexer return a STRINGToken") {
         FlechaLexer(input).nextToken should equal (STRINGToken("uno"))
       }
     }
+
+    describe("STRINGToken with special string") {
+    val input = " \"\n\" = 2 \n ".iterator.buffered
+    it("the lexer return a STRINGToken") {
+      FlechaLexer(input).nextToken should equal (STRINGToken('\n'.toString))
+    }
+  }
 
     describe("NUMBERToken") {
       val input = " 232 \n ".iterator.buffered
