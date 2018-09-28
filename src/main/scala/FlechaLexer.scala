@@ -4,7 +4,7 @@ import scala.language.postfixOps
 
 case class FlechaLexer(var buffer: BufferedIterator[Char]) {
 
-  def advance =  buffer.next
+  def advance = buffer.next
   def isFinal = !buffer.hasNext
   def current = buffer.head
 
@@ -24,8 +24,8 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
   }
 
   def removeWhitespaces = if (isWhitespace) { advance ; true } else { false }
+  def removeJumpLines = if (isJumpLine) { advance ; true } else { false }
   def removeComments   = if (isComments) { advance ; advance ; advanceLine ; true } else { false }
-  def removeJumpLines = if (isJumpLine) { while(isJumpLine) advance ; true } else { false }
   def advanceLine = while(!isFinal && !isJumpLine) advance
 
   def ignoreWhitespaceAndComments= while (!isFinal && (removeWhitespaces || removeComments || removeJumpLines)) {}
