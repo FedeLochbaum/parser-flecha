@@ -122,10 +122,11 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
   }
 
   def readElseOrElif: Token = {
-    if(current != 'l') {
-      if(!isFinal && buffer.next() == 'i') {
+    if(current == 'l') {
+      advance
+      if(!isFinal && current == 'i') {
         readKeyWord("if", ELIFToken())
-      } else if(!isFinal && buffer.next() == 's') {
+      } else if(!isFinal && current == 's') {
         readKeyWord("se",  ELSEToken())
       } else readID("el")
     } else readID("e")
