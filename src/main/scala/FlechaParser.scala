@@ -94,12 +94,12 @@ case class FlechaParser(input : String) {
     while(isLowerId) { parameters.+:(parseLowerId) ; advanceToken } ; parameters
   }
 
-  def parseExpression: ExprAST = {
+  def parseExpression: AST = {
     val externalExpr = parseExternalExpression
     if (isToken(SEMICOLONToken())) { advanceToken ; DExprAST(externalExpr, parseExpression) } else externalExpr
   }
 
-  def parseExternalExpression: ExExprAST = {
+  def parseExternalExpression: AST = {
     currentToken match {
       case IFToken()     => advanceToken ; parseIf
       case CASEToken()   => advanceToken ; parseCase
@@ -109,19 +109,19 @@ case class FlechaParser(input : String) {
     }
   }
 
-  def parseIf: ExExprAST = {
+  def parseIf = {
     val internalExpr = parseInternalExpression
     matchToken(THENToken())
     val thenInternalExpr = parseInternalExpression
     IfAST(internalExpr, thenInternalExpr, parseElse)
   }
 
-  def parseCase: ExExprAST = {
+  def parseCase = {
     val internalExpr = parseInternalExpression
     CaseAST(internalExpr, parseCaseBranchs)
   }
 
-  def parseLet: ExExprAST = {
+  def parseLet = {
     val name = parseLowerId
     val parameters = parseParameters
     matchToken(DEFEQToken())
@@ -130,13 +130,13 @@ case class FlechaParser(input : String) {
     LetAST(name, parameters, internalExp, parseExternalExpression)
   }
 
-  def parseLambda: ExExprAST = {
+  def parseLambda = {
     val parameters = parseParameters
     matchToken(ARROWToken())
     LambdaAST(parameters, parseExternalExpression)
   }
 
-  def parseElse = {
+  def parseElse: AST = {
     currentToken match {
       case ELIFToken()     => advanceToken ; parseIf
       case ELSEToken()     => advanceToken ; parseInternalExpression
@@ -156,7 +156,7 @@ case class FlechaParser(input : String) {
     CaseBranchAST(constructor, parameters, parseInternalExpression)
   }
 
-  def parseInternalExpression : InExprAST = {
+  def parseInternalExpression: AST  = {
     if(isUnaryOperation) { parseUnaryOperation }
     else if (isApplicationExpression) { parseApplicationExpression }
     else parseBinaryOperation
@@ -188,7 +188,7 @@ case class FlechaParser(input : String) {
     UnaryWithParenAST(expr)
   }
 
-  def parseApplicationExpression = {
+  def parseApplicationExpression: AST = {
     val atomicOp = parseAtomicOperation
     if (isApplicationExpression) { AppExprAST(atomicOp, parseApplicationExpression) } else { atomicOp }
   }
