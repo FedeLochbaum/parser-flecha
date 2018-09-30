@@ -9,6 +9,7 @@ case class FlechaParser(input : String) {
   def advanceToken = { currentToken = lexer.nextToken }
 
   def isToken = currentToken == _
+
   def isLowerId = {
     currentToken match {
       case LOWERIDToken(_) => true
@@ -161,15 +162,15 @@ case class FlechaParser(input : String) {
     else parseBinaryOperation
   }
 
-  def parseUnaryOperation = {
+  def parseUnaryOperation  = {
     currentToken match {
-      case LOWERIDToken(_) => advanceToken ; LowerIdAST(_)
-      case UPPERIDToken(_) => advanceToken ; UpperIdAST(_)
-      case NUMBERToken(_)  => advanceToken ; NumberAST(_)
-      case CHARToken(_)    => advanceToken ; CharAST(_)
-      case STRINGToken(_)  => advanceToken ; StringAST(_)
-      case LPARENToken()   => advanceToken ; parseExpressionWithEndParen
-      case _               => error("Some Unary Operation")
+      case LOWERIDToken(value) => advanceToken ; LowerIdAST(value)
+      case UPPERIDToken(value) => advanceToken ; UpperIdAST(value)
+      case NUMBERToken(value)  => advanceToken ; NumberAST(value)
+      case CHARToken(value)    => advanceToken ; CharAST(value)
+      case STRINGToken(value)  => advanceToken ; StringAST(value)
+      case LPARENToken()       => advanceToken ; parseExpressionWithEndParen
+      case _                   => error("Some Unary Operation")
     }
   }
 
