@@ -162,7 +162,7 @@ case class FlechaParser(input : String) {
     else parseBinaryOperation
   }
 
-  def parseUnaryOperation  = {
+  def parseAtomicOperation  = {
     currentToken match {
       case LOWERIDToken(value) => advanceToken ; LowerIdAST(value)
       case UPPERIDToken(value) => advanceToken ; UpperIdAST(value)
@@ -170,6 +170,14 @@ case class FlechaParser(input : String) {
       case CHARToken(value)    => advanceToken ; CharAST(value)
       case STRINGToken(value)  => advanceToken ; StringAST(value)
       case LPARENToken()       => advanceToken ; parseExpressionWithEndParen
+      case _                   => error("Some Atomic Operation")
+    }
+  }
+
+  def parseUnaryOperation = {
+    currentToken match {
+      case MINUSToken()        => advanceToken ; MinusAST(parseInternalExpression)
+      case NOTToken()          => advanceToken ; NotAST(parseInternalExpression)
       case _                   => error("Some Unary Operation")
     }
   }
@@ -178,6 +186,31 @@ case class FlechaParser(input : String) {
     val expr = parseExpression
     matchToken(RPARENToken())
     UnaryWithParenAST(expr)
+  }
+
+  def parseApplicationExpression = {
+    val atomicOp = parseAtomicOperation
+    if (isApplicationExpression) { AppExprAST(atomicOp, parseApplicationExpression) } else { atomicOp }
+  }
+
+  def parseBinaryOperation = {
+    val internalExpr = parseInternalExpression
+    currentToken match {
+      case ANDToken()   => AndAST(internalExpr, parseInternalExpression)
+      case ORToken()    => OrAST(internalExpr, parseInternalExpression)
+      case EQToken()    => EqAST(internalExpr, parseInternalExpression)
+      case NEToken()    => NeAST(internalExpr, parseInternalExpression)
+      case GEToken()    => GeAST(internalExpr, parseInternalExpression)
+      case LEToken()    => LeAST(internalExpr, parseInternalExpression)
+      case GTToken()    => GtAST(internalExpr, parseInternalExpression)
+      case LTToken()    => LtAST(internalExpr, parseInternalExpression)
+      case PLUSToken()  => PlusAST(internalExpr, parseInternalExpression)
+      case MINUSToken() => MinusBinaryAST(internalExpr, parseInternalExpression)
+      case TIMESToken() => TimesAST(internalExpr, parseInternalExpression)
+      case DIVToken()   => DivAST(internalExpr, parseInternalExpression)
+      case MODToken()   => ModAST(internalExpr, parseInternalExpression)
+      case _            => error("Some Binary Operation")
+    }
   }
 
   def matchToken(token: Token) =  if (isToken(token)) { error(token.toString) } ; advanceToken
