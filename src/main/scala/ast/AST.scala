@@ -10,6 +10,8 @@ abstract class InExprAST extends ExprAST
 
 abstract class ExExprAST extends ExprAST
 
+abstract class UniryOpAST extends InExprAST
+
 case class ProgramAST(list: List[AST]) extends AST {
   override def toJson: JsObject = ???
 }
@@ -39,5 +41,29 @@ case class LetAST(name: String, parameters: List[String], internalExpr: InExprAS
 }
 
 case class LambdaAST(parameters: List[String], externalExp: ExExprAST) extends ExExprAST {
+  override def toJson: JsObject = ???
+}
+
+case class NumberAST(value: Int) extends UniryOpAST {
+  override def toJson: JsObject = ???
+}
+
+case class LowerIdAST(value: String) extends UniryOpAST {
+  override def toJson: JsObject = ???
+}
+
+case class UpperIdAST(value: String) extends UniryOpAST {
+  override def toJson: JsObject = ???
+}
+
+case class CharAST(value: Char) extends UniryOpAST {
+  override def toJson: JsObject = ???
+}
+
+case class StringAST(value: String) extends UniryOpAST {
+  override def toJson: JsObject = ???
+}
+
+case class UnaryWithParenAST(value: ExprAST) extends UniryOpAST {
   override def toJson: JsObject = ???
 }

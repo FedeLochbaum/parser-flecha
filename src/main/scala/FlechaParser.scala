@@ -16,6 +16,43 @@ case class FlechaParser(input : String) {
     }
   }
 
+  def isUpperId = {
+    currentToken match {
+      case UPPERIDToken(_) => true
+      case _               => false
+    }
+  }
+
+  def isNumber = {
+    currentToken match {
+      case NUMBERToken(_)  => true
+      case _               => false
+    }
+  }
+
+  def isChar = {
+    currentToken match {
+      case CHARToken(_)    => true
+      case _               => false
+    }
+  }
+
+  def isString = {
+    currentToken match {
+      case STRINGToken(_)  => true
+      case _               => false
+    }
+  }
+
+  def isUnaryOperation = {
+    currentToken match {
+      case NOTToken() | MINUSToken() => true
+      case _                         => false
+    }
+  }
+
+  def isApplicationExpression = isLowerId || isUpperId || isNumber || isChar || isString || isToken(LPARENToken())
+
   def parse: JsObject  = {
     val definitions = List()
     while (currentToken != EOFToken()) { definitions.+:(parseDefinition) }
@@ -119,7 +156,27 @@ case class FlechaParser(input : String) {
   }
 
   def parseInternalExpression : InExprAST = {
+    if(isUnaryOperation) { parseUnaryOperation }
+    else if (isApplicationExpression) { parseApplicationExpression }
+    else parseBinaryOperation
+  }
 
+  def parseUnaryOperation = {
+    currentToken match {
+      case LOWERIDToken(_) => advanceToken ; LowerIdAST(_)
+      case UPPERIDToken(_) => advanceToken ; UpperIdAST(_)
+      case NUMBERToken(_)  => advanceToken ; NumberAST(_)
+      case CHARToken(_)    => advanceToken ; CharAST(_)
+      case STRINGToken(_)  => advanceToken ; StringAST(_)
+      case LPARENToken()   => advanceToken ; parseExpressionWithEndParen
+      case _               => error("Some Unary Operation")
+    }
+  }
+
+  def parseExpressionWithEndParen = {
+    val expr = parseExpression
+    matchToken(RPARENToken())
+    UnaryWithParenAST(expr)
   }
 
   def matchToken(token: Token) =  if (isToken(token)) { error(token.toString) } ; advanceToken
