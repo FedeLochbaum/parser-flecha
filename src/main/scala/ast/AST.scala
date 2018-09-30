@@ -1,19 +1,19 @@
 package ast
 
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json._
 
-abstract class AST { def toJson: JsObject }
+abstract class AST { def toJson: JsValue }
 
 case class ProgramAST(list: List[AST]) extends AST {
-  override def toJson: JsObject = ??? //Json.toJson(list.map( ast => ast.toJson))
+  override def toJson: JsValue = Json.toJson(list.map( ast => ast.toJson))
 }
 
-case class DefAST(name: String, parameters: List[String], expression: AST) extends AST {
-  override def toJson: JsObject = ???
+case class DefAST(name: String, parameters: List[String], expression: AST) extends AST { //TODO: missing parameters
+  override def toJson = Json.toJson("Def", name, expression.toJson)
 }
 
 case class DExprAST(externalExp: AST, exp: AST) extends AST {
-  override def toJson: JsObject = ???
+  override def toJson = ???
 }
 
 case class IfAST(internalExpr: AST, thenInternalExpr: AST, elseInternalExpr: AST) extends AST {

@@ -1,5 +1,5 @@
 import ast._
-import play.api.libs.json.JsObject
+import play.api.libs.json.{JsObject, JsValue}
 import tokens._
 
 case class FlechaParser(input : String) {
@@ -54,7 +54,7 @@ case class FlechaParser(input : String) {
 
   def isApplicationExpression = isLowerId || isUpperId || isNumber || isChar || isString || isToken(LPARENToken())
 
-  def parse: JsObject  = {
+  def parse: JsValue  = {
     val definitions = List()
     while (currentToken != EOFToken()) { definitions.+:(parseDefinition) }
     ProgramAST(definitions).toJson
