@@ -29,7 +29,7 @@ case class FlechaParser(input : String) {
     }
   }
 
-  def parseDef: AST = {
+  def parseDef = {
    val name = parseLowerId
    val parameters = parseParameters
    matchToken(DEFEQToken())
@@ -37,14 +37,14 @@ case class FlechaParser(input : String) {
    DefAST(name, parameters, expression)
   }
 
-  def parseLowerId: String = {
+  def parseLowerId = {
     currentToken match {
       case LOWERIDToken(value) => advanceToken ; value
       case _                   => error("LOWERIDToken")
     }
   }
 
-  def parseUpperId: String = {
+  def parseUpperId = {
     currentToken match {
       case UPPERIDToken(value) => advanceToken ; value
       case _                   => error("UPPERIDToken")
@@ -56,13 +56,50 @@ case class FlechaParser(input : String) {
     while(isLowerId) { parameters.+(parseLowerId) ; advanceToken } ; parameters
   }
 
-  def parseExpression: ExpAST = {
+  def parseExpression: ExprAST = {
     val externalExpr = parseExternalExpression
-    if (isToken(SEMICOLONToken())) { advanceToken ; DExpAST(externalExpr, parseExpression) } else externalExpr
+    if (isToken(SEMICOLONToken())) { advanceToken ; DExprAST(externalExpr, parseExpression) } else externalExpr
   }
 
-  def parseExternalExpression: ExExpAST = {
-    
+  def parseExternalExpression: ExExprAST = {
+    currentToken match {
+      case IFToken()     => advanceToken ; parseIf
+      case CASEToken()   => advanceToken ; parseCase
+      case LETToken()    => advanceToken ; parseLet
+      case LAMBDAToken() => advanceToken ; parseLambda
+      case _             => parseInternalExpression
+    }
+  }
+
+  def parseIf = {
+    val internalExpr = parseInternalExpression
+    matchToken(THENToken())
+    val thenInternalExpr = parseInternalExpression
+    IfAST(internalExpr, thenInternalExpr, parseElse)
+  }
+
+  def parseElse = {
+    currentToken match {
+      case ELIFToken()     => advanceToken ; parseIf
+      case ELSEToken()     => advanceToken ; parseInternalExpression
+      case _               => error("ELSEToken or ELIFToken")
+    }
+  }
+
+  def parseCase = {
+
+  }
+
+  def parseLet = {
+
+  }
+
+  def parseLambda = {
+
+  }
+
+  def parseInternalExpression = {
+
   }
 
   def matchToken(token: Token) =  if (isToken(token)) { error(token.toString) } ; advanceToken
