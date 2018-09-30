@@ -53,7 +53,7 @@ case class FlechaParser(input : String) {
 
   def parseParameters: List[String] = {
     val parameters = List()
-    while(isLowerId) { parameters.+(parseLowerId) ; advanceToken } ; parameters
+    while(isLowerId) { parameters.+:(parseLowerId) ; advanceToken } ; parameters
   }
 
   def parseExpression: ExprAST = {
@@ -71,11 +71,31 @@ case class FlechaParser(input : String) {
     }
   }
 
-  def parseIf = {
+  def parseIf: ExExprAST = {
     val internalExpr = parseInternalExpression
     matchToken(THENToken())
     val thenInternalExpr = parseInternalExpression
     IfAST(internalExpr, thenInternalExpr, parseElse)
+  }
+
+  def parseCase: ExExprAST = {
+    val internalExpr = parseInternalExpression
+    CaseAST(internalExpr, parseCaseBranchs)
+  }
+
+  def parseLet: ExExprAST = {
+    val name = parseLowerId
+    val parameters = parseParameters
+    matchToken(DEFEQToken())
+    val internalExp = parseInternalExpression
+    matchToken(INToken())
+    LetAST(name, parameters, internalExp, parseExternalExpression)
+  }
+
+  def parseLambda: ExExprAST = {
+    val parameters = parseParameters
+    matchToken(ARROWToken())
+    LambdaAST(parameters, parseExternalExpression)
   }
 
   def parseElse = {
@@ -86,19 +106,19 @@ case class FlechaParser(input : String) {
     }
   }
 
-  def parseCase = {
-
+  def parseCaseBranchs = {
+    val branchs = List()
+    while(isToken(PIPEToken)) { advanceToken ;  branchs.+:(parseCaseBranch) } ; branchs
   }
 
-  def parseLet = {
-
+  def parseCaseBranch = {
+    val constructor = parseUpperId
+    val parameters = parseParameters
+    matchToken(ARROWToken())
+    CaseBranchAST(constructor, parameters, parseInternalExpression)
   }
 
-  def parseLambda = {
-
-  }
-
-  def parseInternalExpression = {
+  def parseInternalExpression : InExprAST = {
 
   }
 
