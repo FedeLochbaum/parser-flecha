@@ -198,8 +198,17 @@ case class FlechaParser(input : String) {
   }
 
   def parseApplicationExpression: AST = {
-    val atomicOp = parseAtomicOperation
-    if (isApplicationExpression) { AppExprAST(atomicOp, parseApplicationExpression) } else { atomicOp }
+    var atomicList = parseAtomics.reverse
+    var res: AST = atomicList.head
+    atomicList = atomicList.tail
+    while(atomicList.nonEmpty) { res = AppExprAST(res, atomicList.head) ; atomicList = atomicList.tail }
+    res
+  }
+
+  def parseAtomics = {
+    var atomics = List[AST]()
+    while (isApplicationExpression) { atomics = atomics.+:(parseAtomicOperation)}
+    atomics
   }
 
   def parseBinaryOperation = {
