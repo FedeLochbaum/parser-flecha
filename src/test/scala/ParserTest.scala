@@ -12,8 +12,8 @@ class ParserTest  extends FunSpec with Matchers {
 
     testCases.foreach( testNumber =>
       it(s"Test $testNumber") {
-        val input = Source.fromFile(s"${directionInput}test$testNumber.input").getLines.mkString
-        val output = Source.fromFile(s"${directionOutput}test$testNumber.expected").getLines.mkString
+        val input = Source.fromFile(s"${directionInput}test$testNumber.input").mkString
+        val output = Source.fromFile(s"${directionOutput}test$testNumber.expected").mkString
 
         FlechaParser(input).parse should equal (Json.parse(output))
       }
@@ -30,9 +30,15 @@ class ParserTest  extends FunSpec with Matchers {
 
     describe("a program just with a definition of one variable declaration") {
       val input = "def uno = 1 \n "
-      val definition = DefAST("uno", List(), NumberAST(1))
       it("the parser return a Program AST with definition") {
-        FlechaParser(input).parse should equal(ProgramAST(List(definition)))
+        FlechaParser(input).parse should equal(Json.arr(Json.toJson(("Def", "uno", ("ExprNumber", 1)))))
+      }
+    }
+
+    describe("") {
+      val input = "def\ncuatro=4--comentario \n "
+      it("the parser return a Program AST") {
+        FlechaParser(input).parse should equal(Json.arr(Json.toJson(("Def", "cuatro", ("ExprNumber", 4)))))
       }
     }
   }

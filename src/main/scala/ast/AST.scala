@@ -24,7 +24,7 @@ case class CaseBranchAST(constructor: String, parameters: List[String], parseInt
   override def toJson: JsObject = ???
 }
 
-case class CaseAST(internalExpr: AST, caseBranchs: List[CaseBranchAST]) extends AST {
+case class CaseAST(internalExpr: AST, caseBranchs: List[AST]) extends AST {
   override def toJson: JsObject = ???
 }
 
@@ -37,7 +37,7 @@ case class LambdaAST(parameters: List[String], externalExp: AST) extends AST {
 }
 
 case class NumberAST(value: Int) extends AST {
-  override def toJson: JsObject = ???
+  override def toJson: JsValue = Json.toJson("ExprNumber", value)
 }
 
 case class LowerIdAST(value: String) extends AST {
