@@ -49,7 +49,7 @@ case class UpperIdAST(value: String) extends AST {
 }
 
 case class CharAST(value: Char) extends AST {
-  override def toJson: JsObject = ???
+  override def toJson: JsValue = Json.toJson("ExprChar", value.hashCode())
 }
 
 case class StringAST(value: String) extends AST {

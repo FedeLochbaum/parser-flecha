@@ -134,16 +134,16 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
     }
   }
 
-  def readSimpleChar(char: Char): Token = if(current == ''') { advance ; CHARToken(char) } else error("Expected '")
+  def readSimpleChar(char: Char): Token = if(current == ''') { advance ; CHARToken(char) } else { error("Expected '") }
 
   def readSpecialChar: Token = {
     current match {
-      case '''  => readSimpleChar(''')
-      case '\"' => readSimpleChar('\"')
-      case '\\' => readSimpleChar('\\')
-      case 't'  => readSimpleChar('\t')
-      case 'n'  => readSimpleChar('\n')
-      case 'r'  => readSimpleChar('\r')
+      case '''  => advance ; readSimpleChar(''')
+      case '\"' => advance ; readSimpleChar('\"')
+      case '\\' => advance ; readSimpleChar('\\')
+      case 't'  => advance ; readSimpleChar('\t')
+      case 'n'  => advance ; readSimpleChar('\n')
+      case 'r'  => advance ; readSimpleChar('\r')
       case  _   => error("Expected a valid char")
     }
   }
