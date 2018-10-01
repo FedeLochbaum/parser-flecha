@@ -8,7 +8,7 @@ case class ProgramAST(list: List[AST]) extends AST {
   override def toJson = Json.toJson(list.reverseMap(ast => ast.toJson))
 }
 
-case class DefAST(name: String, parameters: List[String], expression: AST) extends AST { //TODO: missing parameters
+case class DefAST(name: String, expression: AST) extends AST {
   override def toJson = Json.toJson("Def", name, expression.toJson)
 }
 
@@ -24,12 +24,12 @@ case class CaseAST(internalExpr: AST, caseBranchs: List[AST]) extends AST {
   override def toJson = Json.toJson("ExprCase", internalExpr.toJson, caseBranchs.map(ast => ast.toJson))
 }
 
-case class LetAST(name: String, parameters: List[String], internalExpr: AST, externalExp: AST) extends AST {
-  override def toJson = Json.toJson("ExprLet", name, internalExpr.toJson, externalExp.toJson) //TODO: missing parameters
+case class LetAST(name: String, internalExpr: AST, externalExp: AST) extends AST {
+  override def toJson = Json.toJson("ExprLet", name, internalExpr.toJson, externalExp.toJson)
 }
 
-case class LambdaAST(parameters: List[String], externalExp: AST) extends AST {
-  override def toJson = ???
+case class LambdaAST(id: String, externalExp: AST) extends AST {
+  override def toJson = Json.toJson("ExprLambda", id, externalExp.toJson)
 }
 
 case class NumberAST(value: Int) extends AST {

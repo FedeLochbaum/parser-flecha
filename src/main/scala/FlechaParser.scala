@@ -75,8 +75,8 @@ case class FlechaParser(input : String) {
    val name = parseLowerId
    val parameters = parseParameters
    matchToken(DEFEQToken())
-   val expression = parseExpression
-   DefAST(name, parameters, expression)
+   val expression = createLambdaWithParams(parameters, parseExpression)
+   DefAST(name, expression)
   }
 
   def parseLowerId = {
@@ -130,15 +130,17 @@ case class FlechaParser(input : String) {
     val name = parseLowerId
     val parameters = parseParameters
     matchToken(DEFEQToken())
-    val internalExp = parseInternalExpression
+    val internalExp = createLambdaWithParams(parameters, parseInternalExpression)
     matchToken(INToken())
-    LetAST(name, parameters, internalExp, parseExternalExpression)
+    LetAST(name, internalExp, parseExternalExpression)
   }
+
+  def createLambdaWithParams(parameters: List[String], expr: AST): AST = { if(parameters.isEmpty) { expr } else { LambdaAST(parameters.head, createLambdaWithParams(parameters.tail, expr)) } }
 
   def parseLambda = {
     val parameters = parseParameters
     matchToken(ARROWToken())
-    LambdaAST(parameters, parseExternalExpression)
+    createLambdaWithParams(parameters, parseExternalExpression)
   }
 
   def parseElse: AST = {
