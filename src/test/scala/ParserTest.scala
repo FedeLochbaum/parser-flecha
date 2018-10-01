@@ -1,3 +1,4 @@
+import ast.{DefAST, NumberAST, ProgramAST}
 import org.scalatest.{FunSpec, Matchers}
 import play.api.libs.json.Json
 
@@ -17,5 +18,22 @@ class ParserTest  extends FunSpec with Matchers {
         FlechaParser(input).parse should equal (Json.parse(output))
       }
     )
+
+    describe("Empty program AST") {
+      describe("a program just with a comment with jump line") {
+        val input = " -- Programa Vacio \n "
+        it("the parser return a Program AST with") {
+          FlechaParser(input).parse should equal(Json.arr())
+        }
+      }
+    }
+
+    describe("a program just with a definition of one variable declaration") {
+      val input = "def uno = 1 \n "
+      val definition = DefAST("uno", List(), NumberAST(1))
+      it("the parser return a Program AST with definition") {
+        FlechaParser(input).parse should equal(ProgramAST(List(definition)))
+      }
+    }
   }
 }

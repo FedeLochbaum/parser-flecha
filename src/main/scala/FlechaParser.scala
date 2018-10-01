@@ -6,6 +6,7 @@ case class FlechaParser(input : String) {
 
   val lexer = FlechaLexer(input.iterator.buffered)
   var currentToken: Token = lexer.nextToken
+
   def advanceToken = { currentToken = lexer.nextToken }
 
   def isToken = currentToken == _
@@ -54,7 +55,10 @@ case class FlechaParser(input : String) {
 
   def isApplicationExpression = isLowerId || isUpperId || isNumber || isChar || isString || isToken(LPARENToken())
 
+  def resetLexer = { lexer.buffer = input.iterator.buffered ; advanceToken }
+
   def parse: JsValue  = {
+    resetLexer
     val definitions = List()
     while (currentToken != EOFToken()) { definitions.+:(parseDefinition) }
     ProgramAST(definitions).toJson
@@ -146,7 +150,7 @@ case class FlechaParser(input : String) {
 
   def parseCaseBranchs = {
     val branchs = List()
-    while(isToken(PIPEToken)) { advanceToken ;  branchs.+:(parseCaseBranch) } ; branchs
+    while(isToken(PIPEToken())) { advanceToken ;  branchs.+:(parseCaseBranch) } ; branchs
   }
 
   def parseCaseBranch = {
@@ -213,7 +217,7 @@ case class FlechaParser(input : String) {
     }
   }
 
-  def matchToken(token: Token) =  if (isToken(token)) { error(token.toString) } ; advanceToken
+  def matchToken(token: Token) =  if (!isToken(token)) { error(token.toString) } ; advanceToken
 
   def error(expectedType: String, extraMessage: String = "") = throw new FlechaParseError(expectedType, extraMessage, currentToken)
 }
