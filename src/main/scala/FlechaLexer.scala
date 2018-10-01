@@ -173,8 +173,8 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
 
   def readID(currentString: String = "") = {
     var completeString = currentString
-    while(!isFinal && !isWhitespace && !isSymbol) { completeString+=current.toString ; advance }
-    if(!isWhitespace && !isSymbol) completeString+=current.toString
+    while(!isFinal && !isWhitespace && !isSymbol && !isJumpLine) { completeString+=current.toString ; advance }
+    if(!isWhitespace && !isSymbol && !isJumpLine) completeString+=current.toString
     if(Character.isUpperCase(completeString.charAt(0))) UPPERIDToken(completeString) else LOWERIDToken(completeString)
   }
 

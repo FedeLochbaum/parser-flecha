@@ -1,4 +1,3 @@
-import ast.{DefAST, NumberAST, ProgramAST}
 import org.scalatest.{FunSpec, Matchers}
 import play.api.libs.json.Json
 

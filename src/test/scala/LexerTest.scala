@@ -75,6 +75,13 @@ class LexerTest extends FunSpec with Matchers {
       }
     }
 
+    describe("DEFToken2") {
+      val input = "def\ncuatro=4--comentario \n ".iterator.buffered
+      it("the lexer return a DEFToken") {
+        FlechaLexer(input).nextToken should equal (DEFToken())
+      }
+    }
+
     describe("IFToken") {
       val input = " if \n ".iterator.buffered
       it("the lexer return a IFToken") {
