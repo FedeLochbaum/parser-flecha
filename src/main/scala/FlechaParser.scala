@@ -197,7 +197,7 @@ case class FlechaParser(input : String) {
     UnaryWithParenAST(expr)
   }
 
-  def parseApplicationExpression: AST = {
+  def parseApplicationExpression = {
     var atomicList = parseAtomics.reverse
     var appExpr = atomicList.head
     atomicList = atomicList.tail
