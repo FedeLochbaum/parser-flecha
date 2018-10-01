@@ -5,7 +5,7 @@ import play.api.libs.json._
 abstract class AST { def toJson: JsValue }
 
 case class ProgramAST(list: List[AST]) extends AST {
-  override def toJson: JsValue = Json.toJson(list.reverseMap( ast => ast.toJson))
+  override def toJson: JsValue = Json.toJson(list.reverseMap(ast => ast.toJson))
 }
 
 case class DefAST(name: String, parameters: List[String], expression: AST) extends AST { //TODO: missing parameters
@@ -16,16 +16,12 @@ case class DExprAST(externalExp: AST, exp: AST) extends AST {
   override def toJson = ???
 }
 
-case class IfAST(internalExpr: AST, thenInternalExpr: AST, elseInternalExpr: AST) extends AST {
-  override def toJson: JsObject = ???
-}
-
 case class CaseBranchAST(constructor: String, parameters: List[String], parseInternalExpression: AST) extends AST {
-  override def toJson: JsObject = ???
+  override def toJson: JsValue = Json.toJson("CaseBranch", constructor, parameters, parseInternalExpression.toJson)
 }
 
 case class CaseAST(internalExpr: AST, caseBranchs: List[AST]) extends AST {
-  override def toJson: JsObject = ???
+  override def toJson: JsValue = Json.toJson("ExprCase", internalExpr.toJson, caseBranchs.map(ast => ast.toJson))
 }
 
 case class LetAST(name: String, parameters: List[String], internalExpr: AST, externalExp: AST) extends AST {

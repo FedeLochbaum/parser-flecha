@@ -116,8 +116,9 @@ case class FlechaParser(input : String) {
   def parseIf = {
     val internalExpr = parseInternalExpression
     matchToken(THENToken())
-    val thenInternalExpr = parseInternalExpression
-    IfAST(internalExpr, thenInternalExpr, parseElse)
+    val thenCase = CaseBranchAST("True", List(), parseInternalExpression)
+    val elseCase = CaseBranchAST("False", List(), parseElse)
+    CaseAST(internalExpr, List(thenCase, elseCase))
   }
 
   def parseCase = {
