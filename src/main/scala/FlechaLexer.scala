@@ -26,7 +26,7 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
     current match {
       case '(' | ')' | ';' | '\\' | '+' | '-' |
            '*' | '/' | '%' | '=' | '&' | '!' |
-           '<' | '>'             => true
+           '<' | '>' | '|'       => true
       case _                     => false
     }
   }

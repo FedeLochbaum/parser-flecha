@@ -95,7 +95,7 @@ case class FlechaParser(input : String) {
 
   def parseParameters = {
     var parameters = List[String]()
-    while(isLowerId) { parameters = parameters.+:(parseLowerId) ; advanceToken } ; parameters
+    while(isLowerId) { parameters = parameters.+:(parseLowerId) } ; parameters
   }
 
   def parseExpression: AST = {
@@ -123,7 +123,7 @@ case class FlechaParser(input : String) {
 
   def parseCase = {
     val internalExpr = parseInternalExpression
-    CaseAST(internalExpr, parseCaseBranchs)
+    CaseAST(internalExpr, parseCaseBranchs.reverse)
   }
 
   def parseLet = {
@@ -156,7 +156,7 @@ case class FlechaParser(input : String) {
 
   def parseCaseBranch = {
     val constructor = parseUpperId
-    val parameters = parseParameters
+    val parameters = parseParameters.reverse
     matchToken(ARROWToken())
     CaseBranchAST(constructor, parameters, parseInternalExpression)
   }
