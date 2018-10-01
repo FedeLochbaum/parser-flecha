@@ -5,7 +5,7 @@ import play.api.libs.json._
 abstract class AST { def toJson: JsValue }
 
 case class ProgramAST(list: List[AST]) extends AST {
-  override def toJson: JsValue = Json.toJson(list.map( ast => ast.toJson))
+  override def toJson: JsValue = Json.toJson(list.reverseMap( ast => ast.toJson))
 }
 
 case class DefAST(name: String, parameters: List[String], expression: AST) extends AST { //TODO: missing parameters
