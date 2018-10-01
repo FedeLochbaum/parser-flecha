@@ -161,6 +161,8 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
       case 'n'  => '\n'
       case 'r'  => '\r'
       case '''  => '\''
+      case '"'  => '\"'
+      case '\\' => '\\'
       case  _   => "\\" ++ current.toString
     }
   }
