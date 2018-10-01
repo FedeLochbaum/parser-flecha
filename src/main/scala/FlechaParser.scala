@@ -59,8 +59,8 @@ case class FlechaParser(input : String) {
 
   def parse: JsValue  = {
     resetLexer
-    val definitions = List()
-    while (currentToken != EOFToken()) { definitions.+:(parseDefinition) }
+    var definitions = List[AST]()
+    while (currentToken != EOFToken()) { definitions = definitions.+:(parseDefinition)}
     ProgramAST(definitions).toJson
   }
 
@@ -93,9 +93,9 @@ case class FlechaParser(input : String) {
     }
   }
 
-  def parseParameters: List[String] = {
-    val parameters = List()
-    while(isLowerId) { parameters.+:(parseLowerId) ; advanceToken } ; parameters
+  def parseParameters = {
+    var parameters = List[String]()
+    while(isLowerId) { parameters = parameters.+:(parseLowerId) ; advanceToken } ; parameters
   }
 
   def parseExpression: AST = {
@@ -149,8 +149,8 @@ case class FlechaParser(input : String) {
   }
 
   def parseCaseBranchs = {
-    val branchs = List()
-    while(isToken(PIPEToken())) { advanceToken ;  branchs.+:(parseCaseBranch) } ; branchs
+    var branchs = List[AST]()
+    while(isToken(PIPEToken())) { advanceToken ;  branchs = branchs.+:(parseCaseBranch) } ; branchs
   }
 
   def parseCaseBranch = {
@@ -217,7 +217,7 @@ case class FlechaParser(input : String) {
     }
   }
 
-  def matchToken(token: Token) =  if (!isToken(token)) { error(token.toString) } ; advanceToken
+  def matchToken(token: Token) =  if (!isToken(token)) { error(token.toString) } else { advanceToken }
 
   def error(expectedType: String, extraMessage: String = "") = throw new FlechaParseError(expectedType, extraMessage, currentToken)
 }
