@@ -8,7 +8,7 @@ case class FlechaLexer(var buffer: BufferedIterator[Char]) {
   def isFinal = !buffer.hasNext
   def current = buffer.head
 
-  def isJumpLine = current == '\n'
+  def isJumpLine = current == '\n' || current == '\t'
   def isWhitespace = current == ' '
   def isComments = {
     val currentString = buffer.mkString

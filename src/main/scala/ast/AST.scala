@@ -5,7 +5,7 @@ import play.api.libs.json._
 abstract class AST { def toJson: JsValue }
 
 case class ProgramAST(list: List[AST]) extends AST {
-  override def toJson: JsValue = Json.toJson(list.reverseMap(ast => ast.toJson))
+  override def toJson = Json.toJson(list.reverseMap(ast => ast.toJson))
 }
 
 case class DefAST(name: String, parameters: List[String], expression: AST) extends AST { //TODO: missing parameters
@@ -17,63 +17,63 @@ case class DExprAST(externalExp: AST, exp: AST) extends AST {
 }
 
 case class CaseBranchAST(constructor: String, parameters: List[String], parseInternalExpression: AST) extends AST {
-  override def toJson: JsValue = Json.toJson("CaseBranch", constructor, parameters, parseInternalExpression.toJson)
+  override def toJson = Json.toJson("CaseBranch", constructor, parameters, parseInternalExpression.toJson)
 }
 
 case class CaseAST(internalExpr: AST, caseBranchs: List[AST]) extends AST {
-  override def toJson: JsValue = Json.toJson("ExprCase", internalExpr.toJson, caseBranchs.map(ast => ast.toJson))
+  override def toJson = Json.toJson("ExprCase", internalExpr.toJson, caseBranchs.map(ast => ast.toJson))
 }
 
 case class LetAST(name: String, parameters: List[String], internalExpr: AST, externalExp: AST) extends AST {
-  override def toJson: JsObject = ???
+  override def toJson = ???
 }
 
 case class LambdaAST(parameters: List[String], externalExp: AST) extends AST {
-  override def toJson: JsObject = ???
+  override def toJson = ???
 }
 
 case class NumberAST(value: Int) extends AST {
-  override def toJson: JsValue = Json.toJson("ExprNumber", value)
+  override def toJson = Json.toJson("ExprNumber", value)
 }
 
 case class LowerIdAST(value: String) extends AST {
-  override def toJson: JsValue = Json.toJson("ExprVar", value)
+  override def toJson = Json.toJson("ExprVar", value)
 }
 
 case class UpperIdAST(value: String) extends AST {
-  override def toJson: JsValue = Json.toJson("ExprConstructor", value)
+  override def toJson = Json.toJson("ExprConstructor", value)
 }
 
 case class CharAST(value: Char) extends AST {
-  override def toJson: JsValue = Json.toJson("ExprChar", value.hashCode())
+  override def toJson = Json.toJson("ExprChar", value.hashCode())
 }
 
 case class UnaryWithParenAST(value: AST) extends AST {
-  override def toJson: JsValue = { value.toJson }
+  override def toJson = value.toJson
 }
 
 case class MinusAST(expr: AST) extends AST {
-  override def toJson: JsObject = ???
+  override def toJson  = ???
 }
 
 case class NotAST(expr: AST) extends AST {
-  override def toJson: JsObject = ???
+  override def toJson = ???
 }
 
 case class AppExprAST(atomicOp: AST, appExprAST: AST) extends AST {
-  override def toJson: JsValue = Json.toJson("ExprApply", atomicOp.toJson, appExprAST.toJson)
+  override def toJson = Json.toJson("ExprApply", atomicOp.toJson, appExprAST.toJson)
 }
 
 case class AndAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
-  override def toJson: JsObject = ???
+  override def toJson = ???
 }
 
 case class OrAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
-  override def toJson: JsObject = ???
+  override def toJson = ???
 }
 
 case class EqAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
-  override def toJson: JsObject = ???
+  override def toJson = ???
 }
 
 case class NeAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
