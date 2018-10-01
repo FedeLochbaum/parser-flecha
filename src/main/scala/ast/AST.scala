@@ -41,11 +41,11 @@ case class NumberAST(value: Int) extends AST {
 }
 
 case class LowerIdAST(value: String) extends AST {
-  override def toJson: JsObject = ???
+  override def toJson: JsValue = Json.toJson("ExprVar", value)
 }
 
 case class UpperIdAST(value: String) extends AST {
-  override def toJson: JsObject = ???
+  override def toJson: JsValue = Json.toJson("ExprConstructor", value)
 }
 
 case class CharAST(value: Char) extends AST {
