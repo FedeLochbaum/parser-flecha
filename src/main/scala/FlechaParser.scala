@@ -199,10 +199,9 @@ case class FlechaParser(input : String) {
 
   def parseApplicationExpression: AST = {
     var atomicList = parseAtomics.reverse
-    var res: AST = atomicList.head
+    var appExpr = atomicList.head
     atomicList = atomicList.tail
-    while(atomicList.nonEmpty) { res = AppExprAST(res, atomicList.head) ; atomicList = atomicList.tail }
-    res
+    while(atomicList.nonEmpty) { appExpr = AppExprAST(appExpr, atomicList.head) ; atomicList = atomicList.tail } ; appExpr
   }
 
   def parseAtomics = {
