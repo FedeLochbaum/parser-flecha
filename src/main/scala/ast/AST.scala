@@ -53,11 +53,11 @@ case class CharAST(value: Char) extends AST {
 }
 
 case class StringAST(value: String) extends AST {
-  override def toJson: JsObject = ???
+  override def toJson: JsValue = Json.toJson("ExprChar", value.hashCode())
 }
 
 case class UnaryWithParenAST(value: AST) extends AST {
-  override def toJson: JsObject = ???
+  override def toJson: JsValue = { value.toJson }
 }
 
 case class MinusAST(expr: AST) extends AST {
@@ -69,7 +69,7 @@ case class NotAST(expr: AST) extends AST {
 }
 
 case class AppExprAST(atomicOp: AST, appExprAST: AST) extends AST {
-  override def toJson: JsObject = ???
+  override def toJson: JsValue = Json.toJson("ExprApply", atomicOp.toJson, appExprAST.toJson)
 }
 
 case class AndAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
