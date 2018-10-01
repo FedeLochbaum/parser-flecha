@@ -95,7 +95,7 @@ case class FlechaParser(input : String) {
 
   def parseParameters = {
     var parameters = List[String]()
-    while(isLowerId) { parameters = parameters.+:(parseLowerId) } ; parameters
+    while(isLowerId) { parameters = parameters.+:(parseLowerId) } ; parameters.reverse
   }
 
   def parseExpression: AST = {
@@ -123,7 +123,7 @@ case class FlechaParser(input : String) {
 
   def parseCase = {
     val internalExpr = parseInternalExpression
-    CaseAST(internalExpr, parseCaseBranchs.reverse)
+    CaseAST(internalExpr, parseCaseBranchs)
   }
 
   def parseLet = {
@@ -151,12 +151,12 @@ case class FlechaParser(input : String) {
 
   def parseCaseBranchs = {
     var branchs = List[AST]()
-    while(isToken(PIPEToken())) { advanceToken ;  branchs = branchs.+:(parseCaseBranch) } ; branchs
+    while(isToken(PIPEToken())) { advanceToken ;  branchs = branchs.+:(parseCaseBranch) } ; branchs.reverse
   }
 
   def parseCaseBranch = {
     val constructor = parseUpperId
-    val parameters = parseParameters.reverse
+    val parameters = parseParameters
     matchToken(ARROWToken())
     CaseBranchAST(constructor, parameters, parseInternalExpression)
   }
@@ -199,7 +199,7 @@ case class FlechaParser(input : String) {
   }
 
   def parseApplicationExpression = {
-    var atomicList = parseAtomics.reverse
+    var atomicList = parseAtomics
     var appExpr = atomicList.head
     atomicList = atomicList.tail
     while(atomicList.nonEmpty) { appExpr = AppExprAST(appExpr, atomicList.head) ; atomicList = atomicList.tail } ; appExpr
@@ -207,8 +207,7 @@ case class FlechaParser(input : String) {
 
   def parseAtomics = {
     var atomics = List[AST]()
-    while (isApplicationExpression) { atomics = atomics.+:(parseAtomicOperation)}
-    atomics
+    while (isApplicationExpression) { atomics = atomics.+:(parseAtomicOperation)} ; atomics.reverse
   }
 
   def parseBinaryOperation = {

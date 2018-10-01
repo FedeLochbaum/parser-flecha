@@ -25,7 +25,7 @@ case class CaseAST(internalExpr: AST, caseBranchs: List[AST]) extends AST {
 }
 
 case class LetAST(name: String, parameters: List[String], internalExpr: AST, externalExp: AST) extends AST {
-  override def toJson = ???
+  override def toJson = Json.toJson("ExprLet", name, internalExpr.toJson, externalExp.toJson) //TODO: missing parameters
 }
 
 case class LambdaAST(parameters: List[String], externalExp: AST) extends AST {
