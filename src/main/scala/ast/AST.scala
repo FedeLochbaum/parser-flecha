@@ -52,10 +52,6 @@ case class CharAST(value: Char) extends AST {
   override def toJson: JsValue = Json.toJson("ExprChar", value.hashCode())
 }
 
-case class StringAST(value: String) extends AST {
-  override def toJson: JsValue = Json.toJson("ExprChar", value.hashCode())
-}
-
 case class UnaryWithParenAST(value: AST) extends AST {
   override def toJson: JsValue = { value.toJson }
 }

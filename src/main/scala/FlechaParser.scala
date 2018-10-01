@@ -172,10 +172,15 @@ case class FlechaParser(input : String) {
       case UPPERIDToken(value) => advanceToken ; UpperIdAST(value)
       case NUMBERToken(value)  => advanceToken ; NumberAST(value)
       case CHARToken(value)    => advanceToken ; CharAST(value)
-      case STRINGToken(value)  => advanceToken ; StringAST(value)
+      case STRINGToken(value)  => advanceToken ; parseString(value)
       case LPARENToken()       => advanceToken ; parseExpressionWithEndParen
       case _                   => error("Some Atomic Operation")
     }
+  }
+
+  def parseString(string: String): AST = {
+    if(string.isEmpty) { UpperIdAST("Nil") }
+    else AppExprAST(AppExprAST(UpperIdAST("Cons"), CharAST(string.head)), parseString(string.tail))
   }
 
   def parseUnaryOperation = {
