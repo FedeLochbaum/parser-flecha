@@ -225,9 +225,16 @@ case class FlechaParser(input : String) {
     while (isApplicationExpression) { atomics = atomics.+:(parseAtomicOperation)} ; atomics.reverse
   }
 
+  def parsePairsOfOperationAndAtomic = {
+    var list = List[(String, AST)]()
+    while(isBinary) { list = list.+:((parseBinaryOperator, parseAtomicOperation)) } ; list.reverse
+  }
+
   def parseBinaryOperation(atomic: AST = null) = {
-    val internalExpr = if (atomic == null) { parseInternalExpression } else { atomic }
-    AppExprAST(AppExprAST(LowerIdAST(parseBinaryOperator), internalExpr), parseInternalExpression)
+    var pariList = parsePairsOfOperationAndAtomic
+    var appExpr = if(atomic == null) { val (op, atomic)::tail = pariList ; pariList = tail ; AppExprAST(LowerIdAST(op), atomic) } else { atomic }
+
+    while(pariList.nonEmpty) { appExpr =AppExprAST(AppExprAST(LowerIdAST(pariList.head._1), appExpr), pariList.head._2) ; pariList = pariList.tail } ; appExpr
   }
 
   def parseBinaryOperator = {
