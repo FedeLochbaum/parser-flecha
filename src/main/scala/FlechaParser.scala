@@ -100,7 +100,7 @@ case class FlechaParser(input : String) {
 
   def parseExpression: AST = {
     val externalExpr = parseExternalExpression
-    if (isToken(SEMICOLONToken())) { advanceToken ; DExprAST(externalExpr, parseExpression) } else externalExpr
+    if (isToken(SEMICOLONToken())) { advanceToken ; LetAST("_", externalExpr, parseExpression) } else externalExpr
   }
 
   def parseExternalExpression: AST = {

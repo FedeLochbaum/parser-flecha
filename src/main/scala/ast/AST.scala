@@ -12,10 +12,6 @@ case class DefAST(name: String, expression: AST) extends AST {
   override def toJson = Json.toJson("Def", name, expression.toJson)
 }
 
-case class DExprAST(externalExp: AST, exp: AST) extends AST {
-  override def toJson = ???
-}
-
 case class CaseBranchAST(constructor: String, parameters: List[String], parseInternalExpression: AST) extends AST {
   override def toJson = Json.toJson("CaseBranch", constructor, parameters, parseInternalExpression.toJson)
 }
