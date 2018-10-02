@@ -6,7 +6,7 @@ import scala.io.Source
 class ParserTest  extends FunSpec with Matchers {
   describe("For each test case, check if the result of Parser is equals to output") {
     val testCases = List("00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12",
-                          "13")
+                          "13", "14")
     val directionInput = "src/utils/testCases/input/"
     val directionOutput = "src/utils/testCases/expected/"
 

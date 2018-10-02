@@ -55,6 +55,15 @@ case class FlechaParser(input : String) {
 
   def isApplicationExpression = isLowerId || isUpperId || isNumber || isChar || isString || isToken(LPARENToken())
 
+  def isBinary = {
+    currentToken match {
+      case ANDToken()   | ORToken() |EQToken() | NEToken() | GEToken() | LEToken()
+           | GTToken()  | LTToken() | PLUSToken() | MINUSToken() |TIMESToken()
+           | DIVToken() | MODToken() => true
+      case _                         => false
+    }
+  }
+
   def resetLexer = { lexer.buffer = input.iterator.buffered ; advanceToken }
 
   def parse: JsValue  = {
@@ -165,8 +174,11 @@ case class FlechaParser(input : String) {
 
   def parseInternalExpression: AST  = {
     if(isUnaryOperation) { parseUnaryOperation }
-    else if (isApplicationExpression) { parseApplicationExpression }
-    else parseBinaryOperation
+    else if (isApplicationExpression) {
+      val atomic = parseAtomicOperation
+      if(isBinary) { parseBinaryOperation(atomic) } else { parseApplicationExpression(atomic) }
+    }
+    else parseBinaryOperation()
   }
 
   def parseAtomicOperation  = {
@@ -186,10 +198,12 @@ case class FlechaParser(input : String) {
     else AppExprAST(AppExprAST(UpperIdAST("Cons"), CharAST(string.head)), parseString(string.tail))
   }
 
-  def parseUnaryOperation = {
+  def parseUnaryOperation = AppExprAST(LowerIdAST(parseUnaryOperator), parseInternalExpression)
+
+  def parseUnaryOperator = {
     currentToken match {
-      case MINUSToken()        => advanceToken ; MinusAST(parseInternalExpression)
-      case NOTToken()          => advanceToken ; NotAST(parseInternalExpression)
+      case MINUSToken()        => advanceToken ; "UMINUS"
+      case NOTToken()          => advanceToken ; "NOT"
       case _                   => error("Some Unary Operation")
     }
   }
@@ -200,10 +214,9 @@ case class FlechaParser(input : String) {
     UnaryWithParenAST(expr)
   }
 
-  def parseApplicationExpression = {
+  def parseApplicationExpression(atomic: AST = null) = {
     var atomicList = parseAtomics
-    var appExpr = atomicList.head
-    atomicList = atomicList.tail
+    var appExpr = if(atomic == null) { val head::tail = atomicList ; atomicList = tail ; head } else { atomic }
     while(atomicList.nonEmpty) { appExpr = AppExprAST(appExpr, atomicList.head) ; atomicList = atomicList.tail } ; appExpr
   }
 
@@ -212,22 +225,26 @@ case class FlechaParser(input : String) {
     while (isApplicationExpression) { atomics = atomics.+:(parseAtomicOperation)} ; atomics.reverse
   }
 
-  def parseBinaryOperation = {
-    val internalExpr = parseInternalExpression
+  def parseBinaryOperation(atomic: AST = null) = {
+    val internalExpr = if (atomic == null) { parseInternalExpression } else { atomic }
+    AppExprAST(AppExprAST(LowerIdAST(parseBinaryOperator), internalExpr), parseInternalExpression)
+  }
+
+  def parseBinaryOperator = {
     currentToken match {
-      case ANDToken()   => AndAST(internalExpr, parseInternalExpression)
-      case ORToken()    => OrAST(internalExpr, parseInternalExpression)
-      case EQToken()    => EqAST(internalExpr, parseInternalExpression)
-      case NEToken()    => NeAST(internalExpr, parseInternalExpression)
-      case GEToken()    => GeAST(internalExpr, parseInternalExpression)
-      case LEToken()    => LeAST(internalExpr, parseInternalExpression)
-      case GTToken()    => GtAST(internalExpr, parseInternalExpression)
-      case LTToken()    => LtAST(internalExpr, parseInternalExpression)
-      case PLUSToken()  => PlusAST(internalExpr, parseInternalExpression)
-      case MINUSToken() => MinusBinaryAST(internalExpr, parseInternalExpression)
-      case TIMESToken() => TimesAST(internalExpr, parseInternalExpression)
-      case DIVToken()   => DivAST(internalExpr, parseInternalExpression)
-      case MODToken()   => ModAST(internalExpr, parseInternalExpression)
+      case ANDToken()   => advanceToken ; "AND"
+      case ORToken()    => advanceToken ; "OR"
+      case EQToken()    => advanceToken ; "EQ"
+      case NEToken()    => advanceToken ; "NE"
+      case GEToken()    => advanceToken ; "GE"
+      case LEToken()    => advanceToken ; "LE"
+      case GTToken()    => advanceToken ; "GT"
+      case LTToken()    => advanceToken ; "LT"
+      case PLUSToken()  => advanceToken ; "ADD"
+      case MINUSToken() => advanceToken ; "SUB"
+      case TIMESToken() => advanceToken ; "MUL"
+      case DIVToken()   => advanceToken ; "DIV"
+      case MODToken()   => advanceToken ; "MOD"
       case _            => error("Some Binary Operation")
     }
   }

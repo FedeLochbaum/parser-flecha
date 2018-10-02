@@ -48,66 +48,6 @@ case class UnaryWithParenAST(value: AST) extends AST {
   override def toJson = value.toJson
 }
 
-case class MinusAST(expr: AST) extends AST {
-  override def toJson  = ???
-}
-
-case class NotAST(expr: AST) extends AST {
-  override def toJson = ???
-}
-
 case class AppExprAST(atomicOp: AST, appExprAST: AST) extends AST {
   override def toJson = Json.toJson("ExprApply", atomicOp.toJson, appExprAST.toJson)
-}
-
-case class AndAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
-  override def toJson = ???
-}
-
-case class OrAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
-  override def toJson = ???
-}
-
-case class EqAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
-  override def toJson = ???
-}
-
-case class NeAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
-  override def toJson: JsObject = ???
-}
-
-case class GeAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
-  override def toJson: JsObject = ???
-}
-
-case class LeAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
-  override def toJson: JsObject = ???
-}
-
-case class GtAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
-  override def toJson: JsObject = ???
-}
-
-case class LtAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
-  override def toJson: JsObject = ???
-}
-
-case class PlusAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
-  override def toJson: JsObject = ???
-}
-
-case class MinusBinaryAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
-  override def toJson: JsObject = ???
-}
-
-case class TimesAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
-  override def toJson: JsObject = ???
-}
-
-case class DivAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
-  override def toJson: JsObject = ???
-}
-
-case class ModAST(internalExprLeft: AST, internalExprRight: AST) extends AST {
-  override def toJson: JsObject = ???
 }
