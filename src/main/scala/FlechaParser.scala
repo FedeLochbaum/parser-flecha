@@ -172,13 +172,18 @@ case class FlechaParser(input : String) {
     CaseBranchAST(constructor, parameters, parseInternalExpression)
   }
 
-  def parseInternalExpression: AST  = {
+  def parseInternalExpressionAux: AST  = {
     if(isUnaryOperation) { parseUnaryOperation }
     else if (isApplicationExpression) {
       val atomic = parseAtomicOperation
       if(isBinary) { parseBinaryOperation(atomic) } else { parseApplicationExpression(atomic) }
     }
     else parseBinaryOperation()
+  }
+
+  def parseInternalExpression: AST  = {
+    val internal = parseInternalExpressionAux
+    if (isBinary) { AppExprAST(AppExprAST(LowerIdAST(parseBinaryOperator), internal), parseInternalExpression) } else { internal }
   }
 
   def parseAtomicOperation  = {
