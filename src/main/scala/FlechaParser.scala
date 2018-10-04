@@ -186,10 +186,7 @@ case class FlechaParser(input : String) {
 
   def parseInternalExpression = parseExpressionOf(0)
 
-  def operatorIsInLevel(level: Int) = {
-    var res = false
-    for (i <- level until precedenceTable.length) { res = res || precedenceTable(i).contains(currentToken) } ; res
-  }
+  def operatorIsInLevel(level: Int) = precedenceTable(level).contains(currentToken)
 
   def parseExpressionOf(level: Int): AST = {
     if(level == precedenceTable.length) { parseApplicationExpression } else {
