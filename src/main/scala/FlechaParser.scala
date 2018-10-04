@@ -184,26 +184,16 @@ case class FlechaParser(input : String) {
     CaseBranchAST(constructor, parameters, parseInternalExpression)
   }
 
-//  def parseInternalExpressionAux: AST  = {
-//    if(isUnaryOperation) { parseUnaryOperation }
-//    else if (isApplicationExpression) {
-//      val atomic = parseAtomicOperation
-//      if(isBinary) { parseBinaryOperation(atomic) } else { parseApplicationExpression(atomic) }
-//    }
-//    else parseBinaryOperation()
-//  }
+  def parseInternalExpression = parseExpressionOf(0)
 
-  def parseInternalExpression: AST  = {
-    parseExpressionOf(0)
-//    val internal = parseInternalExpressionAux
-//    if (isBinary) { AppExprAST(AppExprAST(LowerIdAST(parseBinaryOperator), internal), parseInternalExpression) } else { internal }
+  def operatorIsInLevel(level: Int) = {
+    var res = false
+    for (i <- level until precedenceTable.length) { res = res || precedenceTable(i).contains(currentToken) } ; res
   }
-
-  def operatorIsInLevel(level: Int) = precedenceTable(level).contains(currentToken)
 
   def parseExpressionOf(level: Int): AST = {
     if(level == precedenceTable.length) { parseApplicationExpression } else {
-      if(isUnaryOperation && operatorIsInLevel(level)) {
+      if(isUnaryOperation && operatorIsInLevel(level) ) {
         AppExprAST(LowerIdAST(parseUnaryOperator), parseExpressionOf(level)) // level ?
       } else {
         var expr1 = parseExpressionOf(level+1)
@@ -232,8 +222,6 @@ case class FlechaParser(input : String) {
     else AppExprAST(AppExprAST(UpperIdAST("Cons"), CharAST(string.head)), parseString(string.tail))
   }
 
-//  def parseUnaryOperation = AppExprAST(LowerIdAST(parseUnaryOperator), parseInternalExpression)
-
   def parseUnaryOperator = {
     currentToken match {
       case MINUSToken()        => advanceToken ; "UMINUS"
@@ -259,17 +247,6 @@ case class FlechaParser(input : String) {
     while (isApplicationExpression) { atomics = atomics.+:(parseAtomicOperation)} ; atomics.reverse
   }
 
-//  def parsePairsOfOperationAndAtomic = {
-//    var list = List[(String, AST)]()
-//    while(isBinary) { list = list.+:((parseBinaryOperator, parseAtomicOperation)) } ; list.reverse
-//  }
-//
-//  def parseBinaryOperation(atomic: AST = null) = {
-//    var pariList = parsePairsOfOperationAndAtomic
-//    var appExpr = if(atomic == null) { val (op, atomic)::tail = pariList ; pariList = tail ; AppExprAST(LowerIdAST(op), atomic) } else { atomic }
-//
-//    while(pariList.nonEmpty) { appExpr =AppExprAST(AppExprAST(LowerIdAST(pariList.head._1), appExpr), pariList.head._2) ; pariList = pariList.tail } ; appExpr
-//  }
 
   def parseBinaryOperator = {
     currentToken match {
