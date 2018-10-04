@@ -46,7 +46,7 @@ case class FlechaParser(input : String) {
     }
   }
 
-  def isUnaryOperation = {
+  def isUnary = {
     currentToken match {
       case NOTToken() | MINUSToken() => true
       case _                         => false
@@ -193,8 +193,8 @@ case class FlechaParser(input : String) {
 
   def parseExpressionOf(level: Int): AST = {
     if(level == precedenceTable.length) { parseApplicationExpression } else {
-      if(isUnaryOperation && operatorIsInLevel(level) ) {
-        AppExprAST(LowerIdAST(parseUnaryOperator), parseExpressionOf(level)) // level ?
+      if(isUnary && operatorIsInLevel(level) ) {
+        AppExprAST(LowerIdAST(parseUnaryOperator), parseExpressionOf(level))
       } else {
         var expr1 = parseExpressionOf(level+1)
         while(isBinary && operatorIsInLevel(level)) {
