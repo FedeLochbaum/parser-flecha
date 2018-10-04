@@ -201,16 +201,15 @@ case class FlechaParser(input : String) {
 
   def operatorIsInLevel(level: Int) = precedenceTable(level).contains(currentToken)
 
-
   def parseExpressionOf(level: Int): AST = {
-    if(level == precedenceTable.length) { parseApplicationExpression() } else {
+    if(level == precedenceTable.length) { parseApplicationExpression } else {
       if(isUnaryOperation && operatorIsInLevel(level)) {
-        AppExprAST(LowerIdAST(parseUnaryOperator), parseExpressionOf(level+1))
+        AppExprAST(LowerIdAST(parseUnaryOperator), parseExpressionOf(level)) // level ?
       } else {
-        val expr1 = parseExpressionOf(level+1)
-        if(isBinary && operatorIsInLevel(level)) {
-          AppExprAST(AppExprAST(LowerIdAST(parseBinaryOperator), expr1), parseExpressionOf(level+1))
-        } else { expr1 }
+        var expr1 = parseExpressionOf(level+1)
+        while(isBinary && operatorIsInLevel(level)) {
+          expr1 = AppExprAST(AppExprAST(LowerIdAST(parseBinaryOperator), expr1), parseExpressionOf(level+1))
+        } ; expr1
       }
     }
   }
@@ -249,9 +248,9 @@ case class FlechaParser(input : String) {
     UnaryWithParenAST(expr)
   }
 
-  def parseApplicationExpression(atomic: AST = null) = {
+  def parseApplicationExpression = {
     var atomicList = parseAtomics
-    var appExpr = if(atomic == null) { val head::tail = atomicList ; atomicList = tail ; head } else { atomic }
+    var appExpr = { val head::tail = atomicList ; atomicList = tail ; head }
     while(atomicList.nonEmpty) { appExpr = AppExprAST(appExpr, atomicList.head) ; atomicList = atomicList.tail } ; appExpr
   }
 
