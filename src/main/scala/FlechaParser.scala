@@ -53,15 +53,28 @@ case class FlechaParser(input : String) {
     }
   }
 
-  val precedenceTable = List(
+
+
+// INVARIANT: unaryPrecedenceTable and binaryPrecedenceTable EVER have the same count of levels
+  val unaryPrecedenceTable = List(
+    List(),
+    List(),
+    List(NOTToken()),
+    List(),
+    List(),
+    List(),
+    List(),
+    List(MINUSToken()),
+  )
+  val binaryPrecedenceTable = List(
       List(ORToken()),
       List(ANDToken()),
-      List(NOTToken()),
+      List(),
       List(EQToken(), NEToken(), GEToken(), LEToken(), GTToken(), LTToken()),
       List(PLUSToken(), MINUSToken()),
       List(TIMESToken()),
       List(DIVToken(), MODToken()),
-      List(MINUSToken()),
+      List(),
   )
 
 
@@ -186,17 +199,17 @@ case class FlechaParser(input : String) {
 
   def parseInternalExpression = parseExpressionOf(0)
 
-  def operatorIsInLevel(level: Int) = precedenceTable(level).contains(currentToken)
+  def binaryOperatorIsInLevel(level: Int) = binaryPrecedenceTable(level).contains(currentToken)
+
+  def unaryOperatorIsInLevel(level: Int) = unaryPrecedenceTable(level).contains(currentToken)
 
   def parseExpressionOf(level: Int): AST = {
-    if(level == precedenceTable.length) { parseApplicationExpression } else {
-      if(isUnary && operatorIsInLevel(level) ) {
+    if(level == binaryPrecedenceTable.length) { parseApplicationExpression } else {
+      if(isUnary && unaryOperatorIsInLevel(level) ) {
         AppExprAST(LowerIdAST(parseUnaryOperator), parseExpressionOf(level))
       } else {
         var expr1 = parseExpressionOf(level+1)
-        while(isBinary && operatorIsInLevel(level)) {
-          expr1 = AppExprAST(AppExprAST(LowerIdAST(parseBinaryOperator), expr1), parseExpressionOf(level+1))
-        } ; expr1
+        while(isBinary && binaryOperatorIsInLevel(level)) { expr1 = AppExprAST(AppExprAST(LowerIdAST(parseBinaryOperator), expr1), parseExpressionOf(level+1)) } ; expr1
       }
     }
   }
