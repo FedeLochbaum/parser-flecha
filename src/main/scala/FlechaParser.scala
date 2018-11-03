@@ -91,6 +91,13 @@ case class FlechaParser(input : String) {
 
   def resetLexer = { lexer.buffer = input.iterator.buffered ; advanceToken }
 
+  def ast: AST = {
+    resetLexer
+    var definitions = List[AST]()
+    while (currentToken != EOFToken()) { definitions = definitions.+:(parseDefinition)}
+    ProgramAST(definitions)
+  }
+
   def parse: JsValue  = {
     resetLexer
     var definitions = List[AST]()
